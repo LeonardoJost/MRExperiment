@@ -1,0 +1,12 @@
+#custom event set definition
+response: event_type=="Response"
+pic: event_type=="Picture"
+stimulus: (event_type=="Picture") or (event_type=="Sound")
+
+
+#custom table definition
+event_pair_table custom_pair_table(block1,model1,mirror1,angle1,time1,code2,time2,time_diff, rm_type)
+#output
+#table
+print "block\tmodel\tmirror\tangle\ttime\tresponse\ttime2\tdiff\ttype"
+print custom_pair_table(rm_all,"\t","\n",no_header_row)

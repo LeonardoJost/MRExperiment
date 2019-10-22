@@ -1,0 +1,6 @@
+#custom event set definition
+description: event_type=="Manual"
+response: event_type=="Text Input"
+
+event_table custom_table(code)
+print custom_table(all,"\t","\n",no_header_row)
