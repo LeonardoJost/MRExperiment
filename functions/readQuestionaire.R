@@ -1,4 +1,4 @@
-### description
+### Read data from questionaire logfiles
 #     Copyright (C) 2019  Leonardo Jost
 # 
 # This program is free software: you can redistribute it and/or modify

@@ -20,7 +20,9 @@ source("functions/readData.R", encoding="utf-8")
 source("functions/calculateData.R", encoding="utf-8")
 source("functions/generateGraphsAndTables.R", encoding="utf-8")
 
-#create output directories
+#create output directories, if they don't exist (outputs warnings otherwise)
+dir.create("figs")
+dir.create("output")
 dir.create("figs/MR")
 dir.create("figs/MR/allData")
 dir.create("figs/MR/meanData")
