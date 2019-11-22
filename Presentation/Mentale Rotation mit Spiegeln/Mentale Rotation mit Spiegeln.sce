@@ -233,6 +233,9 @@ models.add(modell16);
 #feedback texts
 string falsch="\u2717";
 string richtig="\u2713";
+#times
+int durationPractice=10;
+int durationMain=30;
 
 ##subroutine definition
 
@@ -481,9 +484,6 @@ end;
 
 
 ##main program
-#parameters
-int durationPractice=10;
-int durationMain=30;
 #load trialslists
 array<int> trialslistPractice[][]=createTrials(10,"",10);
 array<int> trialslistMain[][]=createTrials(10,"",10);

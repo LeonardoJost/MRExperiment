@@ -30,12 +30,12 @@ toNumeric=function(vec) {
   }
 }
 
-#factor to string (only if levels of factor are strings)
+#factor to string
 toChar=function(vec) {
   if (is.factor(vec)) {
     return(as.character(levels(vec))[vec])
   } else {
-    return(vec)
+    return(as.character(vec))
   }
 }
 
@@ -100,4 +100,34 @@ modelSummary=function(model, sims=1000) {
     model.confint=0
   }
   return(list(summary(model),model.drop1,model.confint))
+}
+
+#returns edinburgh handedness value to a dataframe containing values starting from startIndex
+getHandedness=function(verbose,dat,startIndex, numberOfCriteria) {
+  library(stringr)
+  mat=data.frame(lapply(dat[c(startIndex+0:11)], as.character), stringsAsFactors=FALSE)
+  hand=rep(0,nrow(mat))
+  for (i in 1:nrow(mat)) {
+    handString=paste(mat[i,1:numberOfCriteria],collapse="")
+    hand[i]=(str_count(handString,"r")-str_count(handString,"[l1]"))/(str_count(handString,"r")+str_count(handString,"[l1]")+2*str_count(handString,"0"))
+  }
+  dat$hand=round(10*hand)
+  return(dat) 
+}
+
+#clean questionaire Data
+cleanData=function(dat,toFirstChars,toNums,cleanWhiteSpaces) {
+  for(toFirstChar in toFirstChars)
+  {
+    dat[,toFirstChar]=substr(toChar(dat[,toFirstChar]),1,1)
+  }
+  for(toNum in toNums)
+  {
+    dat[,toNum]=stringToNum(dat[,toNum])
+  }
+  for(cleanWhiteSpace in cleanWhiteSpaces)
+  {
+    dat[,cleanWhiteSpace]=trimws(dat[,cleanWhiteSpace])
+  }
+  return(dat)
 }

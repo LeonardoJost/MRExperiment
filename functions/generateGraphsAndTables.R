@@ -17,7 +17,7 @@
 source("functions/helpers.R")
 
 #generate table and graphs for cond from MRData dataset
-generateTableAndGraphsForCondition=function(conditionString,degreeGraphs=TRUE,timeGraphs=TRUE){
+generateTableAndGraphsForCondition=function(MRData,conditionString,degreeGraphs=TRUE,timeGraphs=TRUE){
   #calculate means by angle and interesting condition (important for plotting accuracy)
   #careful with outliers
   library(plyr)
@@ -25,7 +25,7 @@ generateTableAndGraphsForCondition=function(conditionString,degreeGraphs=TRUE,ti
   MRDataMeansByIDDegcond=ddply(MRData,
                                .(ID,deg,cond),
                                summarize,
-                               diff=weighted.mean(diff,typeOutlier=="hit"),
+                               reactionTime=weighted.mean(reactionTime,typeOutlier=="hit"),
                                hits=sum(typeOutlier=="hit"),
                                misses=sum(typeOutlier=="incorrect"),
                                acc=hits/(hits+misses),
@@ -34,8 +34,8 @@ generateTableAndGraphsForCondition=function(conditionString,degreeGraphs=TRUE,ti
   MRDataMeansByDegcond=ddply(MRDataMeansByIDDegcond,
                              .(deg,cond),
                              summarize,
-                             diffSd=sd(diff),
-                             diff=mean(diff),
+                             reactionTimeSd=sd(reactionTime),
+                             reactionTime=mean(reactionTime),
                              accSd=sd(acc),
                              acc=mean(acc))
   #format digits
@@ -58,73 +58,11 @@ generateTableAndGraphsForCondition=function(conditionString,degreeGraphs=TRUE,ti
   }
 }
 
-meanSd3=function(x){
-  factor=3
-  data.frame(ymin=mean(x)-factor*sd(x),ymax=mean(x)+factor*sd(x),y=mean(x))
-}
-meanSd1=function(x){
-  factor=1
-  data.frame(ymin=mean(x)-factor*sd(x),ymax=mean(x)+factor*sd(x),y=mean(x))
-}
-
-#generate standard graphs
+#generate reaction time graphs
 generateGraphs=function(dataset,title,outliers=TRUE) {
   library(ggplot2)
-  #plot data (all Data by degree)
-  ggplot(dataset,aes(y=diff,x=deg,group=deg)) + 
-    stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
-    geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
-    labs(x="degrees(°)",y="Reaction Time(ms)")
-  ggsave(paste("figs/",title,"PlotByDegree.png",sep=""))
-  
-  if(outliers) {
-    library(plyr)
-    dataset=ddply(dataset, .(deg), mutate, Q1=quantile(diff, 1/4,na.rm=T), Q3=quantile(diff, 3/4,na.rm=T), IQR=Q3-Q1, upper.limit=Q3+1.5*IQR, lower.limit=Q1-1.5*IQR)
-    
-    #plot data (all Data by degree with means and 3*sd)
-    ggplot(dataset,aes(y=diff,x=deg,group=deg)) + 
-      stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
-      geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
-      stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") +
-      stat_summary(fun.data = meanSd3, geom = "pointrange", position = position_dodge(1), fill="red", color="red") +
-      labs(x="degrees(°)",y="Reaction Time(ms)")
-    ggsave(paste("figs/",title,"PlotByDegreeWithMeanSd.png",sep=""))
-    
-    #plot data (all Data by degree with Outlier coloring)
-    ggplot(dataset,aes(y=diff,x=deg,group=deg)) + 
-      stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
-      geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
-      labs(x="degrees(°)",y="Reaction Time(ms)") +
-      stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") +
-      geom_point(data=dataset[dataset$diff > dataset$upper.limit | dataset$diff < dataset$lower.limit,], aes(col=typeOutlier))
-    ggsave(paste("figs/",title,"PlotByDegreeOutlierColor.png",sep=""))
-    
-    #plot data (all Data by degree without outliers)
-    ggplot(dataset[which(!dataset$outlier),],aes(y=diff,x=deg,group=deg)) + 
-      stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
-      geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
-      labs(x="degrees(°)",y="Reaction Time(ms)") +
-      stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") 
-    ggsave(paste("figs/",title,"PlotByDegreeNoOutlier.png",sep=""))
-  }
-  #plot data (all Data by degree and condition, grouped by condition)
-  ggplot(dataset,aes(y=diff,x=deg,group=deg,fill=cond)) + 
-    stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
-    geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() + facet_wrap(~cond) + 
-    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") + 
-    labs(x="degrees(°)",y="Reaction Time(ms)",fill="condition")
-  ggsave(paste("figs/",title,"PlotByConditionDegree.png",sep=""))
-  
-  #plot data (mean Data by degree and condition, grouped by degrees)
-  ggplot(dataset,aes(y=diff,x=cond,group=cond,fill=cond)) + 
-    stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
-    geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() + facet_wrap(~deg) + 
-    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") +
-    labs(x="condition",y="Reaction Time(ms)") + guides(fill=FALSE)
-  ggsave(paste("figs/",title,"PlotByDegreeCondition.png",sep=""))
-  
   #plot data as line graph (mean Data by degree and condition)
-  ggplot(dataset,aes(y=diff,x=deg,group=deg,fill=cond, color=cond)) + 
+  ggplot(dataset,aes(y=reactionTime,x=deg,group=deg,fill=cond, color=cond)) + 
     stat_summary(na.rm=TRUE, fun.y=mean, geom="line",  aes(group=cond,color=cond)) +
     stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2,aes(group=cond,color=cond)) +
     stat_summary(fun.data=mean_cl_normal,geom="errorbar", width=0.2,aes(group=cond,color=cond)) +
@@ -136,7 +74,7 @@ generateGraphs=function(dataset,title,outliers=TRUE) {
 generateLineGraphsByTime=function(dataset,title) {
   library(ggplot2)
   #plot data as line graph (mean Data by degree and condition)
-  ggplot(dataset,aes(y=diff,x=absTime, color=cond)) + 
+  ggplot(dataset,aes(y=reactionTime,x=absTime, color=cond)) + 
     geom_smooth(aes(fill=cond)) +
     labs(x="time(ms)",y="Reaction Time(ms)") +theme_bw()
   ggsave(paste("figs/",title,"LinePlotByCondTime.png",sep=""))
@@ -144,6 +82,22 @@ generateLineGraphsByTime=function(dataset,title) {
 
 #generate graphs for accuracy
 generateAccGraphs=function(dataset,title) {
+  library(ggplot2)
+  #plot data as line graph (mean Data by degree and condition)
+  ggplot(dataset,aes(y=acc,x=deg,group=deg,fill=cond, color=cond)) + 
+    stat_summary(na.rm=TRUE, fun.y=mean, geom="line",  aes(group=cond,color=cond)) +
+    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2,aes(group=cond,color=cond)) +
+    stat_summary(fun.data=mean_cl_normal,geom="errorbar", width=0.2,aes(group=cond,color=cond)) +
+    labs(x="degrees(°)",y="accuracy") +theme_bw()
+  ggsave(paste("figs/",title,"LinePlotByCondDegree.png",sep=""))
+  
+}
+
+
+#### other graphs (mostly boxplots)
+
+#accuracy graphs
+generateAccGraphsOld=function(dataset,title) {
   library(ggplot2)
   #plot data (all Data by degree and condition, grouped by condition)
   ggplot(dataset,aes(y=acc,x=deg,group=deg,fill=cond)) + 
@@ -160,13 +114,61 @@ generateAccGraphs=function(dataset,title) {
     stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") +
     labs(x="condition",y="accuracy") + guides(fill=FALSE)
   ggsave(paste("figs/",title,"PlotByDegreeCondition.png",sep=""))
+}
+
+#generate reaction time graphs
+generateRTGraphsOld=function(dataset,title,outliers=TRUE) {
+  library(ggplot2)
+  #plot data (all Data by degree)
+  ggplot(dataset,aes(y=reactionTime,x=deg,group=deg)) + 
+    stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
+    geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
+    labs(x="degrees(°)",y="Reaction Time(ms)")
+  ggsave(paste("figs/",title,"PlotByDegree.png",sep=""))
   
-  #plot data as line graph (mean Data by degree and condition)
-  ggplot(dataset,aes(y=acc,x=deg,group=deg,fill=cond, color=cond)) + 
-    stat_summary(na.rm=TRUE, fun.y=mean, geom="line",  aes(group=cond,color=cond)) +
-    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2,aes(group=cond,color=cond)) +
-    stat_summary(fun.data=mean_cl_normal,geom="errorbar", width=0.2,aes(group=cond,color=cond)) +
-    labs(x="degrees(°)",y="accuracy") +theme_bw()
-  ggsave(paste("figs/",title,"LinePlotByCondDegree.png",sep=""))
+  if(outliers) {
+    library(plyr)
+    dataset=ddply(dataset, .(deg), mutate, Q1=quantile(reactionTime, 1/4,na.rm=T), Q3=quantile(reactionTime, 3/4,na.rm=T), IQR=Q3-Q1, upper.limit=Q3+1.5*IQR, lower.limit=Q1-1.5*IQR)
+    
+    #plot data (all Data by degree with means and 3*sd)
+    ggplot(dataset,aes(y=reactionTime,x=deg,group=deg)) + 
+      stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
+      geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
+      stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") +
+      stat_summary(fun.data = meanSd3, geom = "pointrange", position = position_dodge(1), fill="red", color="red") +
+      labs(x="degrees(°)",y="Reaction Time(ms)")
+    ggsave(paste("figs/",title,"PlotByDegreeWithMeanSd.png",sep=""))
+    
+    #plot data (all Data by degree with Outlier coloring)
+    ggplot(dataset,aes(y=reactionTime,x=deg,group=deg)) + 
+      stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
+      geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
+      labs(x="degrees(°)",y="Reaction Time(ms)") +
+      stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") +
+      geom_point(data=dataset[dataset$reactionTime > dataset$upper.limit | dataset$reactionTime < dataset$lower.limit,], aes(col=typeOutlier))
+    ggsave(paste("figs/",title,"PlotByDegreeOutlierColor.png",sep=""))
+    
+    #plot data (all Data by degree without outliers)
+    ggplot(dataset[which(!dataset$outlier),],aes(y=reactionTime,x=deg,group=deg)) + 
+      stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
+      geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() +
+      labs(x="degrees(°)",y="Reaction Time(ms)") +
+      stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") 
+    ggsave(paste("figs/",title,"PlotByDegreeNoOutlier.png",sep=""))
+  }
+  #plot data (all Data by degree and condition, grouped by condition)
+  ggplot(dataset,aes(y=reactionTime,x=deg,group=deg,fill=cond)) + 
+    stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
+    geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() + facet_wrap(~cond) + 
+    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") + 
+    labs(x="degrees(°)",y="Reaction Time(ms)",fill="condition")
+  ggsave(paste("figs/",title,"PlotByConditionDegree.png",sep=""))
   
+  #plot data (mean Data by degree and condition, grouped by degrees)
+  ggplot(dataset,aes(y=reactionTime,x=cond,group=cond,fill=cond)) + 
+    stat_boxplot(na.rm=TRUE, position=position_dodge(2),geom = "errorbar") +
+    geom_boxplot(na.rm=TRUE, position=position_dodge(2)) +theme_bw() + facet_wrap(~deg) + 
+    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2, color="black", fill="black") +
+    labs(x="condition",y="Reaction Time(ms)") + guides(fill=FALSE)
+  ggsave(paste("figs/",title,"PlotByDegreeCondition.png",sep=""))
 }

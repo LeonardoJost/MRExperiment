@@ -15,8 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 source("functions/helpers.R")
-source("functions/readQuestionaire.R")
-source("functions/readData.R", encoding="utf-8")
+source("functions/readDataPresentation.R", encoding="utf-8")
+source("functions/readDataOpenSesame.R", encoding="utf-8")
 source("functions/calculateData.R", encoding="utf-8")
 source("functions/generateGraphsAndTables.R", encoding="utf-8")
 
@@ -26,89 +26,49 @@ dir.create("output")
 dir.create("figs/MR")
 dir.create("figs/MR/allData")
 dir.create("figs/MR/meanData")
-dir.create("figs/MR/meanDataWeighted")
 dir.create("figs/MR/Timed/")
 dir.create("figs/MR/accData/")
 
 #options, parameters
 options(digits=6)
 #set data folder
-folder="data\\"
+folder="data\\OpenSesame\\"
 verbose=1 #detail of output
+experimentalSoftware="OpenSesame" #"OpenSesame" or "Presentation"
+questionaireOutFile="output\\questionaire" #.csv added at end, leave empty if no output desired
+handednessGraphFile="figs\\HandednessMW.png" #leave empty if no output desired
+outlierFactor=3
 
-##get questionaire data and save to csv
-#read data from files
-questionaireData=getQuestionaireDataByDate(verbose, folder,"","q2")
-#do the following, according to measured values
-#calculate handedness
-questionaireData=getHandedness(verbose,questionaireData,11,10)
-#set names
-names(questionaireData)[1:10]=c("MRErfahrung","Alter","Geschlecht","Pille","Periode","Sport","Ausdauer","Kraft","Spiel","Musik")
-#transform values to numeric, remove white spaces, unify gender
-questionaireData=cleanData(questionaireData,c("Alter","Periode","Ausdauer","Kraft","Spiel","Musik"),c("MRErfahrung","Pille","Sport"))
-#unify some data
-questionaireData$sportAkt=questionaireData[,"Ausdauer"]+questionaireData[,"Kraft"]+questionaireData[,"Spiel"]
+if (experimentalSoftware=="OpenSesame") {
+  #make sure there is a questionID "Gender" to process
+  dataset=getOpenSesameData()
+}
+
+if (experimentalSoftware=="Presentation") {
+  dataset=getPresentationData()
+}
+
+
 #save to csv
-write.table(questionaireData,file="output\\questionaire.csv",sep=";", col.names=NA)
-
-##calculate descriptive statistics of questionaire data
-#handedness to factor
-questionaireData$handFactor=as.factor(questionaireData$hand)
-#calculate means and modes by gender and save to csv
-questionaireDataMeansByGender=data.frame(lapply(questionaireData[which(questionaireData$Geschlecht=="m"),],meanMode),stringsAsFactors = FALSE)
-questionaireDataMeansByGender[2,]=lapply(questionaireData[which(questionaireData$Geschlecht=="w"),],meanMode)
-questionaireDataMeansByGender$ID=c("m","w")
-write.table(questionaireDataMeansByGender,file="output\\questionaireMeansByGender.csv",sep=";", col.names=NA)
-#means overall
-questionaireDataMeans=data.frame(lapply(questionaireData,meanMode),stringsAsFactors = FALSE)
-write.table(questionaireDataMeans,file="output\\questionaireMeans.csv",sep=";", col.names=NA)
-#plot handedness
-library(ggplot2)
-ggplot(questionaireData,aes(hand)) + geom_histogram(binwidth=0.5,aes(fill=Geschlecht)) +xlab("Händigkeit") + ylab("Anzahl") + theme_bw()
-ggsave(paste("figs/","HandednessMW.png",sep=""))
-
-##get MR Data
-#all data
-MRData.all=getDataByDate(verbose,folder,"")
-MRData.all=addDataMR(MRData.all)
-#get data by blocks
-MRData.practice=getDataByDate(verbose,folder,"","practice")
-MRData.practice=addDataMR(MRData.practice)
-MRData=getDataByDate(verbose,folder,"","main")
-MRData=addDataMR(MRData)
-#mark outliers
-MRData=sortOutliers(MRData,3)
-MRData$type=as.factor(substring(toChar(MRData$type),4))  #remove rm_
-MRData$typeOutlier=ifelse(MRData$outlier,paste(toChar(MRData$type),"Slow",sep=""),toChar(MRData$type))
-#save original degrees of rotation
-MRData$originalDegrees=MRData$deg
-#modify angles to 360-angle if angle>180, but keep information
-MRData$direction=ifelse(MRData$deg>180,"-",ifelse(MRData$deg==0 | MRData$deg==180,"0","+"))
-MRData$deg=ifelse(MRData$deg>180,360-MRData$deg,MRData$deg)
-#save to csv
-write.table(MRData,file="output\\MRData.csv",sep=";", col.names=NA)
+write.table(dataset,file="output\\dataset.csv",sep=";", col.names=NA)
 
 ##plot reaction time and accuracy by interesting conditions
 #rename interesting variable to cond and generate plots
-MRData$cond=MRData$correctSide
-generateTableAndGraphsForCondition("side")
-MRData$cond=paste(MRData$correctSide,MRData$XYZ,sep="*")
-generateTableAndGraphsForCondition("sideXaxis")
-MRData$cond=paste(MRData$correctSide,MRData$orig,sep="*")
-generateTableAndGraphsForCondition("sideXmirror")
-MRData$cond=MRData$modelNumber
-generateTableAndGraphsForCondition("model")
-MRData$cond=as.factor(MRData$deg)
-generateTableAndGraphsForCondition("deg",FALSE)
-MRData$cond=paste(MRData$deg,MRData$correctSide,sep="*")
-generateTableAndGraphsForCondition("degXside",FALSE)
-MRData$cond=MRData$direction
-generateTableAndGraphsForCondition("direction")
-MRData$cond=paste(MRData$direction,MRData$XYZ,sep="*")
-generateTableAndGraphsForCondition("directionXaxis")
-
-#inspect dataset (output is only in console)
-temp=as.data.frame(table(floor(MRData$absTime/60000)))
-temp$Freq
+dataset$cond=dataset$correctSide
+generateTableAndGraphsForCondition(dataset,"side")
+dataset$cond=paste(dataset$correctSide,dataset$axis,sep="*")
+generateTableAndGraphsForCondition(dataset,"sideXaxis")
+dataset$cond=paste(dataset$correctSide,dataset$orientation,sep="*")
+generateTableAndGraphsForCondition(dataset,"sideXmirror")
+dataset$cond=dataset$model
+generateTableAndGraphsForCondition(dataset,"model")
+dataset$cond=as.factor(dataset$deg)
+generateTableAndGraphsForCondition(dataset,"deg",FALSE)
+dataset$cond=paste(dataset$deg,dataset$correctSide,sep="*")
+generateTableAndGraphsForCondition(dataset,"degXside",FALSE)
+dataset$cond=dataset$direction
+generateTableAndGraphsForCondition(dataset,"direction")
+dataset$cond=paste(dataset$direction,dataset$axis,sep="*")
+generateTableAndGraphsForCondition(dataset,"directionXaxis")
 
 
