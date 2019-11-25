@@ -46,12 +46,23 @@ questionaireData=modifyQuestionaireData(experimentalSoftware,questionaireData)
 MRData=modifyMRData(experimentalSoftware,MRData,outlierFactor)
 #calculate means from questionaire
 calculateMeansQuestionaire(questionaireData,questionaireOutFile,handednessGraphFile)
-#remove not analyzed questionaire data and anonymise IDs
-
+#remove not analyzed questionaire data
+questionaireData=subset(questionaireData,select=c("ID","Gender","Experience"))
 #unify data
 dataset=merge(MRData,questionaireData,by="ID")
+#anonymise IDs
+dataset$ID=as.factor(dataset$ID)
+levels(dataset$ID)=sample.int(length(levels(dataset$ID)),length(levels(dataset$ID)))
 
-
+#check average break time between stimuli
+dataset$endTime=dataset$duration+dataset$reactionTime
+dataset$pauseTime=0
+dataset$pauseTime[2:nrow(dataset)]=dataset$duration[2:nrow(dataset)]-dataset$endTime[1:(nrow(dataset)-1)]
+mean(dataset$pauseTime[which(dataset$pauseTime>0)])
+dataset$endTime=dataset$time_Stimulus+dataset$reactionTime
+dataset$pauseTime=0
+dataset$pauseTime[2:nrow(dataset)]=dataset$time_Stimulus[2:nrow(dataset)]-dataset$endTime[1:(nrow(dataset)-1)]
+mean(dataset$pauseTime[which(dataset$pauseTime>0)])
 
 #save to csv
 write.table(dataset,file="output\\dataset.csv",sep=";", col.names=NA)
