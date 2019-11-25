@@ -1,4 +1,4 @@
-### Read mental rotation data
+### Read mental rotation data from Presentation
 #     Copyright (C) 2019  Leonardo Jost
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -17,55 +17,38 @@
 source("functions/helpers.R")
 source("functions/readQuestionairePresentation.R", encoding="utf-8")
 
-##main function to get all presentation data
-getPresentationData=function() {
-  ##get questionaire data and save to csv
+#get all questionaire data from Presentation
+getPresentationQuestionaireData=function(verbose,folder) {
   #read data from files
-  questionaireData=getQuestionaireDataByDate(verbose, folder,"","q2")
-  #do the following, according to measured values
+  questionaireData=getQuestionaireDataByDatePresentation(verbose, folder,"","q2")
+  return(questionaireData)
+}
+
+#get all MR data from Presentation
+getPresentationMRData=function(verbose,folder) {
+  ##get MR Data
+  MRData=getDataByDatePresentation(verbose,folder,"","main")
+  MRData=addDataMRPresentation(MRData)
+  return(MRData)
+}
+
+#modify questionaire Data from Presentation
+modifyPresentationQuestionaireData=function(questionaireData) {
   #calculate handedness
   questionaireData=getHandedness(verbose,questionaireData,11,10)
   #set names
-  names(questionaireData)[1:10]=c("MRErfahrung","Alter","Geschlecht","Pille","Periode","Sport","Ausdauer","Kraft","Spiel","Musik")
+  names(questionaireData)[1:10]=c("MRexperience","Age","Gender","Pill","Period","Sport","Endurance","Strength","Play","Music")
   #transform values to numeric, remove white spaces, unify gender
-  questionaireData=cleanData(questionaireData,c("Geschlecht"),c("Alter","Periode","Ausdauer","Kraft","Spiel","Musik"),c("MRErfahrung","Pille","Sport"))
+  questionaireData=cleanData(questionaireData,c("Gender"),c("Age","Period","Endurance","Strength","Play","Music"),c("MRexperience","Pill","Sport"))
   #unify some data
-  questionaireData$sportAkt=questionaireData[,"Ausdauer"]+questionaireData[,"Kraft"]+questionaireData[,"Spiel"]
-
-  
-  ##calculate descriptive statistics of questionaire data
+  questionaireData$sportAkt=questionaireData[,"Endurance"]+questionaireData[,"Strength"]+questionaireData[,"Play"]
   #handedness to factor
   questionaireData$handFactor=as.factor(questionaireData$hand)
-  #calculate means and modes by gender and save to csv
-  questionaireDataMeansByGender=data.frame(lapply(questionaireData[which(questionaireData$Geschlecht=="m"),],meanMode),stringsAsFactors = FALSE)
-  questionaireDataMeansByGender[2,]=lapply(questionaireData[which(questionaireData$Geschlecht=="w"),],meanMode)
-  questionaireDataMeansByGender$ID=c("m","w")
-  
-  #means overall
-  questionaireDataMeans=data.frame(lapply(questionaireData,meanMode),stringsAsFactors = FALSE)
-  
-  #save to csv
-  if (questionaireOutFile!="") {
-    write.table(questionaireDataMeansByGender,file=paste(questionaireOutFile,"MeansByGender.csv", sep=""),sep=";", col.names=NA)
-    write.table(questionaireDataMeans,file=paste(questionaireOutFile,"Means.csv", sep=""),sep=";", col.names=NA)
-    write.table(questionaireData,file=paste(questionaireOutFile,".csv", sep=""),sep=";", col.names=NA)
-  }
-  if (handednessGraphFile!="") {
-    #plot handedness
-    library(ggplot2)
-    ggplot(questionaireData,aes(hand)) + geom_histogram(binwidth=0.5,aes(fill=Geschlecht)) +xlab("Handedness") + ylab("Count") + theme_bw()
-    ggsave(handednessGraphFile)
-  }
-  
-  ##get MR Data
-  #all data
-  #MRData.all=getDataByDate(verbose,folder,"")
-  #MRData.all=addDataMR(MRData.all)
-  #get data by blocks
-  #MRData.practice=getDataByDate(verbose,folder,"","practice")
-  #MRData.practice=addDataMR(MRData.practice)
-  MRData=getDataByDatePresentation(verbose,folder,"","main")
-  MRData=addDataMRPresentation(MRData)
+  return(questionaireData)
+}
+
+#modify MR data from Presentation
+modifyPresentationMRData=function(MRData,outlierFactor) {
   #mark outliers
   MRData=sortOutliers(MRData,outlierFactor)
   MRData$type=as.factor(substring(toChar(MRData$type),4))  #remove rm_
@@ -79,9 +62,7 @@ getPresentationData=function() {
   MRData$reactionTime=MRData$diff
   MRData$axis=MRData$XYZ
   MRData$orientation=MRData$orig
-  #merge with questionairedata
-  dataset=merge(MRData,questionaireData,by="ID")
-  return(dataset)
+  return(MRData)
 }
 
 #verbose: detail of output

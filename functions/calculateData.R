@@ -17,19 +17,17 @@
 source("functions/helpers.R")
 
 #mark outliers, whic deviate by more than sdFactor*sd from the mean by degree
-sortOutliers=function(dataset,sdFactor) {
-  degrees=levels(as.factor(dataset$deg))
+sortOutliers=function(MRData,sdFactor) {
+  degrees=levels(as.factor(MRData$deg))
   #allData$type=toChar(allData$type)
-  dataset$outlier=FALSE
+  MRData$outlier=FALSE
   for(degree in degrees) {
-    degreeSubset=dataset[which(dataset$deg==degree),]
-    mean=mean(degreeSubset$diff)
-    sd=sd(degreeSubset$diff)
-    #print(paste(degree,":",mean,"+-",sd,sep=""))
-    #degreeSubset$type=toChar(degreeSubset$type)
-    #degreeSubset$outlier[which(degreeSubset$diff>mean+sdFactor*sd)]=paste(degreeSubset$type[which(degreeSubset$diff>mean+sdFactor*sd)],"Slow",sep="")
-    dataset$outlier[which(dataset$deg==degree & abs(dataset$diff-mean)>sdFactor*sd)]=TRUE
+    degreeSubset=MRData[which(MRData$deg==degree),]
+    meanRT=mean(degreeSubset$reactionTime)
+    sdRT=sd(degreeSubset$reactionTime)
+    #print(paste(degree,":",meanRT,"+-",sdRT,sep=""))
+    MRData$outlier[which(MRData$deg==degree & abs(MRData$reactionTime-meanRT)>sdFactor*sdRT)]=TRUE
   }
   #allData$type=as.factor(allData$type)
-  return(dataset)
+  return(MRData)
 }

@@ -15,12 +15,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 source("functions/helpers.R")
-source("functions/readDataPresentation.R", encoding="utf-8")
-source("functions/readDataOpenSesame.R", encoding="utf-8")
-source("functions/calculateData.R", encoding="utf-8")
+source("functions/readData.R", encoding="utf-8")
 source("functions/generateGraphsAndTables.R", encoding="utf-8")
 
-#create output directories, if they don't exist (outputs warnings otherwise)
+##create output directories, if they don't exist (outputs warnings otherwise)
 dir.create("figs")
 dir.create("output")
 dir.create("figs/MR")
@@ -29,7 +27,7 @@ dir.create("figs/MR/meanData")
 dir.create("figs/MR/Timed/")
 dir.create("figs/MR/accData/")
 
-#options, parameters
+##options, parameters
 options(digits=6)
 #set data folder
 folder="data\\OpenSesame\\"
@@ -37,16 +35,22 @@ verbose=1 #detail of output
 experimentalSoftware="OpenSesame" #"OpenSesame" or "Presentation"
 questionaireOutFile="output\\questionaire" #.csv added at end, leave empty if no output desired
 handednessGraphFile="figs\\HandednessMW.png" #leave empty if no output desired
-outlierFactor=3
+outlierFactor=3 #factor of sd to define outliers in MR
 
-if (experimentalSoftware=="OpenSesame") {
-  #make sure there is a questionID "Gender" to process
-  dataset=getOpenSesameData()
-}
+##read and write data
+#read data
+questionaireData=getQuestionaireData(experimentalSoftware,verbose,folder)
+MRData=getMRData(experimentalSoftware,verbose,folder)
+#modify data #adapt to own data
+questionaireData=modifyQuestionaireData(experimentalSoftware,questionaireData)
+MRData=modifyMRData(experimentalSoftware,MRData,outlierFactor)
+#calculate means from questionaire
+calculateMeansQuestionaire(questionaireData,questionaireOutFile,handednessGraphFile)
+#remove not analyzed questionaire data and anonymise IDs
 
-if (experimentalSoftware=="Presentation") {
-  dataset=getPresentationData()
-}
+#unify data
+dataset=merge(MRData,questionaireData,by="ID")
+
 
 
 #save to csv

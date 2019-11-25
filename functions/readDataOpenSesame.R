@@ -1,4 +1,4 @@
-### Read mental rotation data
+### Read data from OpenSesame
 #     Copyright (C) 2019  Leonardo Jost
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -16,93 +16,78 @@
 
 source("functions/helpers.R")
 
-##main function to get all presentation data
-getOpenSesameData=function(processQuestionaireData=TRUE, processMRData=TRUE) {
+#get all questionaire data from OpenSesame
+getOpenSesameQuestionaireData=function(verbose,folder, preText="", part="questionaire",ending="csv") {
   ##get questionaire data
-  questionaireData=getQuestionaireDataByDateOpenSesame(verbose,folder)
-  if(processQuestionaireData) {
-    #handedness data
-    questionaireData=getHandedness(verbose,questionaireData,which(names(questionaireData) %in% 'Hand')[1],length(which(names(questionaireData) %in% 'Hand')))
-    #transform values to numeric, remove white spaces, unify gender
-    questionaireData=cleanData(questionaireData,c("Gender"),c("Alter","Zyklustag","Ausdauer","Kraft","Spiel","Musik"),c())
-    #unify some data
-    questionaireData$sportAkt=questionaireData[,"Ausdauer"]+questionaireData[,"Kraft"]+questionaireData[,"Spiel"]
-    #handedness to factor
-    questionaireData$handFactor=as.factor(questionaireData$hand)
-  }
+  questionaireData=getQuestionaireDataOpenSesame(verbose,folder, preText="", part="questionaire",ending="csv")
+  return(questionaireData)
+}
+
+#get all MR data from OpenSesame
+getOpenSesameMRData=function(verbose,folder, preText="", part="main",ending="csv") {
+  #get MR data
+  MRData=getDataOpenSesame(verbose,folder, preText="", part="main",ending="csv")
+  return(MRData)
+}
+
+#modify questionaire Data from OpenSesame
+modifyOpenSesameQuestionaireData=function(questionaireData) {
+  #handedness data
+  questionaireData=getHandedness(verbose,questionaireData,which(names(questionaireData) %in% 'Hand')[1],length(which(names(questionaireData) %in% 'Hand')))
+  #transform values to numeric, remove white spaces, unify gender
+  questionaireData=cleanData(questionaireData,c("Gender"),c("Age","Period","Endurance","Strength","Play","Music"),c())
+  #unify some data
+  questionaireData$sportAkt=questionaireData[,"Endurance"]+questionaireData[,"Strength"]+questionaireData[,"Play"]
+  #handedness to factor
+  questionaireData$handFactor=as.factor(questionaireData$hand)
   #rename columns to different names
   colnames(questionaireData) = make.unique(names(questionaireData))
-  ##calculate descriptive statistics of questionaire data
-  
-  #calculate means and modes by gender and save to csv
-  questionaireDataMeansByGender=data.frame(lapply(questionaireData[which(questionaireData$Gender==levels(as.factor(questionaireData$Gender))[1]),],meanMode),stringsAsFactors = FALSE)
-  for (genderNumber in 1:length(levels(as.factor(questionaireData$Gender))))
-    questionaireDataMeansByGender[genderNumber,]=lapply(questionaireData[which(questionaireData$Gender==levels(as.factor(questionaireData$Gender))[genderNumber]),],meanMode)
-  questionaireDataMeansByGender$ID=levels(as.factor(questionaireData$Gender))
-  #means overall
-  questionaireDataMeans=data.frame(lapply(questionaireData,meanMode),stringsAsFactors = FALSE)
-  
-  #save to csv
-  if (questionaireOutFile!="") {
-    write.table(questionaireDataMeansByGender,file=paste(questionaireOutFile,"MeansByGender.csv", sep=""),sep=";", col.names=NA)
-    write.table(questionaireDataMeans,file=paste(questionaireOutFile,"Means.csv", sep=""),sep=";", col.names=NA)
-    write.table(questionaireData,file=paste(questionaireOutFile,".csv", sep=""),sep=";", col.names=NA)
-  }
-  if (handednessGraphFile!="") {
-    #plot handedness
-    library(ggplot2)
-    if(length(levels(as.factor(questionaireData$Gender)))>1)
-      ggplot(questionaireData,aes(hand)) + geom_histogram(binwidth=0.5,aes(fill=Gender)) +xlab("Handedness") + ylab("Count") + theme_bw()
-    else
-      ggplot(questionaireData,aes(hand)) + geom_histogram(binwidth=0.5) +xlab("Handedness") + ylab("Count") + theme_bw()
-    
-    ggsave(handednessGraphFile)
-  }
-  
-  ##get MR data
-  MRData=getDataByDateOpenSesame(verbose,folder)
-  #modify/calculate MR data
-  if(processMRData) {
-    #rename variables
-    MRData$deg=toNumeric(MRData$angle)
-    MRData$reactionTime=MRData$response_time
-    MRData=sortOutliers(MRData,outlierFactor)
-    MRData$type=ifelse(MRData$correct==1,"hit","miss")
-    MRData$typeOutlier=ifelse(MRData$outlier,paste(toChar(MRData$type),"Outlier",sep=""),toChar(MRData$type))
-    MRData$correctSide=ifelse(MRData$correct_response==1,"left","right")
-    MRData$absTime=MRData$duration
-    #save original degrees of rotation
-    MRData$originalDegrees=MRData$deg
-    #modify angles to 360-angle if angle>180, but keep information
-    MRData$direction=ifelse(MRData$deg>180,"-",ifelse(MRData$deg==0 | MRData$deg==180,"0","+"))
-    MRData$deg=ifelse(MRData$deg>180,360-MRData$deg,MRData$deg)
-  }
-  dataset=merge(MRData,questionaireData,by="ID")
-  return(dataset)
+  return(questionaireData)
 }
+
+#modify MR Data from OpenSesame
+modifyOpenSesameMRData=function(MRData,outlierFactor) {
+  #rename variables
+  MRData$deg=toNumeric(MRData$angle)
+  MRData$reactionTime=MRData$response_time
+  MRData=sortOutliers(MRData,outlierFactor)
+  MRData$type=ifelse(MRData$correct==1,"hit","incorrect")
+  MRData$typeOutlier=ifelse(MRData$outlier,paste(toChar(MRData$type),"Outlier",sep=""),toChar(MRData$type))
+  MRData$correctSide=ifelse(MRData$correct_response==1,"left","right")
+  MRData$absTime=MRData$duration
+  #save original degrees of rotation
+  MRData$originalDegrees=MRData$deg
+  #modify angles to 360-angle if angle>180, but keep information
+  MRData$direction=ifelse(MRData$deg>180,"-",ifelse(MRData$deg==0 | MRData$deg==180,"0","+"))
+  MRData$deg=ifelse(MRData$deg>180,360-MRData$deg,MRData$deg)
+  return(MRData)
+}
+
 #verbose: detail of output
 #folder: folder to search in for files
 #preText: Filter, only get files which start with preText
 #part: Filter, only get part of data in block, that contains part in the name
-#items are sorted by date, id is order of dates
-#fileNames are sorted alphabetically if no id is given -> date is alphabetical
-getDataByDateOpenSesame=function(verbose, folder, preText="", part="main",ending="csv") {
+getDataOpenSesame=function(verbose, folder, preText="", part="main",ending="csv") {
   #get files in folger (Reaction Time Data)
   fileNames=getFileNames(folder,preText,ending)
   if (verbose>2) {print(fileNames)}
+  #initialize empty dataframe
   dat=data.frame()
   #loop through all files
   for (fileIndex in 1:length(fileNames)) {
     fileName=fileNames[fileIndex]
     #read data in file as table
     rawData=read.csv(paste(folder,fileName,sep=""),header=TRUE,fill=TRUE, sep=",")
+    #choose only specified block
     dataset=subset(rawData,grepl(part,aaBlock))
-    #add dateOrder as ID to dataset
-    dataset$ID=fileIndex
+    #add to dataset
     dat=rbind(dat,dataset)
   }
+  #change names
   dat$block=dat$aaBlock
+  dat$ID=dat$aaID
   dat$aaBlock=NULL
+  dat$aaID=NULL
   return(dat)
 }
 
@@ -110,22 +95,25 @@ getDataByDateOpenSesame=function(verbose, folder, preText="", part="main",ending
 #folder: folder to search in for files
 #preText: Filter, only get files which start with preText
 #part: Filter, only get part of data in block, that contains part in the name
-#items are sorted by date, id is order of dates
-#fileNames are sorted alphabetically if no id is given -> date is alphabetical
-getQuestionaireDataByDateOpenSesame=function(verbose, folder, preText="", part="questionaire",ending="csv") {
+getQuestionaireDataOpenSesame=function(verbose, folder, preText="", part="questionaire",ending="csv") {
   #get files in folger (Reaction Time Data)
   fileNames=getFileNames(folder,preText,ending)
   if (verbose>2) {print(fileNames)}
+  #initialize empty dataframe
   dat=data.frame()
   #loop through all files
   for (fileIndex in 1:length(fileNames)) {
     fileName=fileNames[fileIndex]
     #read data in file as table
     rawData=read.csv(paste(folder,fileName,sep=""),header=TRUE,fill=TRUE, sep=",")
+    #choose only specified block
     dataset=subset(rawData,grepl(part,aaBlock))
-    values=append(toChar(dataset$angle),fileIndex)
+    #add interesting data to vector
+    values=append(toChar(dataset$angle),dataset$aaID[1])
     if (verbose>1) {print(values)}
+    #add to dataset
     dat=rbind(dat,values,stringsAsFactors = FALSE)
+    #set names according to questionIDs
     if (fileIndex==1) {
       names(dat)=append(toChar(dataset$axis),"ID")
     }
