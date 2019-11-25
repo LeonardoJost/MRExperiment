@@ -1,4 +1,4 @@
-﻿(ShowText)(Intro)Ende des Experiments-- -- Nun folgen noch einige Fragen -- -- Bitte drücken Sie den entsprechenden Button oder bestätigen Ihre Texteingabe mit Enter.-- --Bitte versuchen Sie, alle Fragen zu beantworten. Falls Sie eine Frage nicht beantworten wollen oder können, antworten Sie bitte mit "keine Angabe".
+(ShowText)(Intro)Ende des Experiments-- -- Nun folgen noch einige Fragen -- -- Bitte drücken Sie den entsprechenden Button oder bestätigen Ihre Texteingabe mit Enter.-- --Bitte versuchen Sie, alle Fragen zu beantworten. Falls Sie eine Frage nicht beantworten wollen oder können, antworten Sie bitte mit "keine Angabe".
 (Multiple)(ja,nein)(Experience)Erfahrung mit mentaler Rotation-- --Haben Sie bereits an Experimenten zur mentalen Rotation teilgenommen?
 (TextInput)(Age)Demographische Fragen-- --Wie alt sind Sie? (Jahre)
 (Multiple)(männlich,weiblich,sonstige)(Gender)Demographische Fragen-- --Welches Geschlecht haben Sie?

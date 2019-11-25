@@ -16,11 +16,13 @@ Questions should be entered the following way: (Type)(Options)(ID)(condition). T
 
 The blocks are by default controlled by time and the number of stimuli. If either all stimuli are processed or time is over, the experiment should finish. The transition between blocks is only controlled by time and has to be changed by hand, if necessary.
 #### notes
+Reading txt files is by default using UTF-8-BOM. This should read both UTF-8 and UTF-8-BOM encoded files correctly, while only reading with UTF-8 creates problems when reading UTF-8-BOM encoded files (especially on interpreting question type for the first question).
+
 Xpyriment is used as backend because psycho causes errors when entering non-ASCII characters in the questionaire. In general all backends should work.
 
-Timing calculations for feedback and fixations try to take into account calculation and preparation times. In first tests, they are presented for ~60ms longer than specified, which is closer than specifying the time directly into the sketchpads for feedback and fixations (~110ms in that case) (although the start time is calculated on the basis of the stimulus start time and the reaction time, not the actual time at which the feedback/fixation is presented, i.e. we try to control the pause between reaction and presentation of the next stimulus, not the time that the fixation/feedback is actually shown). Shifting the calculation parts around did not yield different results as of now. Timing differences seem in part influenced by display refresh frequency and loading of the stimulus images into the sketchpad.
+Timing calculations for feedback and fixations try to take into account calculation and preparation times. In first tests, they are presented for ~60ms longer than specified, which is closer than specifying the time directly into the sketchpads for feedback and fixations (~110ms in that case) (although the start time is calculated on the basis of the stimulus start time and the reaction time, not the actual time at which the feedback/fixation is presented, i.e. we try to control the pause between reaction and presentation of the next stimulus, not the time that the fixation/feedback is actually shown). Shifting the calculation parts around did not yield different results as of now. Timing differences seem in part influenced by backend, display refresh frequency, and loading of the stimulus images into the sketchpad.
 
-The questionaire repeats questions that are not answered (as there is an option to skip questions available). As infinite loops are hard to program, the maximum number of questions including reasked questions is set to 1000 (cycles in QuestionsLoop). While this should suffice for most cases, this can easily be changed. (this could probably also be done better in inline scripts by repeating the form inside the OpenSesame loop)
+The questionaire repeats questions that are not answered (as there is an option to skip questions available). 
 
 The naming of the stimulus files is coded in the inline script SetNamesAndResponses.
 
