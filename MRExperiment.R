@@ -52,7 +52,7 @@ questionaireData=subset(questionaireData,select=c("ID","Gender","Experience"))
 dataset=merge(MRData,questionaireData,by="ID")
 #anonymise IDs
 dataset$ID=as.factor(dataset$ID)
-levels(dataset$ID)=sample.int(length(levels(dataset$ID)),length(levels(dataset$ID)))
+levels(dataset$ID)=paste("id",sample.int(length(levels(dataset$ID))),sep="")
 
 #check average break time between stimuli
 dataset$endTime=dataset$duration+dataset$reactionTime

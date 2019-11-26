@@ -3,20 +3,27 @@ Project for the mental rotation test. Contains both code for conducting the expe
 
 ## Conducting the Experiment
 The experiment is programmed according to Jost and Jansen, 2019. The runtime of the experiment is controlled by time instead of the number of stimuli, although an adaptation should be easily possible by adding break conditions. For all controlling software, stimuli and system parameters have to be set for usage.
+
+Both programs contain both the experiment and a questionaire which is read from txt files. The questionaire can be omitted by using empty txt files. Questions are separated by line breaks. "--" serves as a placeholder for line breaks in the questions. "F1", "F2", and "FX" are placeholders for correct feedback, wrong feedback, and fixation symbol in the instructions.
+
+Both programs contain mechanism to prevent returning to the IDE by the participants by requiring exact input.
+
 ### Presentation
 This folder contains the Presentation software (Neurobehavioral Systems, Inc., Berkeley, CA, www.neurobs.com) code for the experiment. Development will probably not continue, as open source alternatives such as OpenSesame are available.
 #### Usage
 Questionaire and instructions are read from txt files. Design parameters and foldernames of stimuli are entered in line 15-37 and 211-235 in the sce file, some fixed instructions can be changed in line 486-505.
+
+The questionaire has to be completed by answering "ende" on the last question. This can be changed in "Keyboard Questionaire.sce".
 ### OpenSesame
 This folder contains the OpenSesame software (Mathôt, Schreij, & Theeuwes, 2012; https://osdoc.cogsci.nl/) code for the experiment. 
 #### Usage
 All stimuli and txt files containing instructions and questions should be loaded into the experiment. Parameters can be changed in the inline script parameters. Blocks can be modified in the loop Blocks.
 
-Questions should be entered the following way: (Type)(Options)(ID)(condition). Type should be either: Multiple (for multiple choice), TextInput (for custom text input) or ShowText (default, only ok button is presented as answer). If type is Multiple, options should include all possible answers separated by ',' (no spaces), for other Types no options should be entered. ID is optional, default is the number of the question. Conditions can be entered if some questions should only be presented depending on previous answers. At the moment only 'ID==answer' is supported and the question is only presented if the question with 'ID' is anwered with 'answer'.
+Questions should be entered the following way: (Type)(Options)(ID)(condition). Type should be either: Multiple (for multiple choice), TextInput (for custom text input), ManualCode (requires exact entering of the question ID in a text field to continue), or ShowText (default, only ok button is presented as answer). If type is Multiple, options should include all possible answers separated by ',' (no spaces), for other Types no options should be entered. ID is optional, default is the number of the question. Conditions can be entered if some questions should only be presented depending on previous answers. At the moment only 'ID==answer' is supported and the question is only presented if the question with 'ID' is anwered with 'answer'.
 
 The blocks are by default controlled by time and the number of stimuli. If either all stimuli are processed or time is over, the experiment should finish. The transition between blocks is only controlled by time and has to be changed by hand, if necessary.
 #### notes
-Reading txt files is by default using UTF-8-BOM. This should read both UTF-8 and UTF-8-BOM encoded files correctly, while only reading with UTF-8 creates problems when reading UTF-8-BOM encoded files (especially on interpreting question type for the first question).
+Reading txt files is by default using UTF-8-BOM. This should read both UTF-8 and UTF-8-BOM encoded files correctly, while only reading with UTF-8 creates problems when reading UTF-8-BOM encoded files (concerning question type for the first question).
 
 Xpyriment is used as backend because psycho causes errors when entering non-ASCII characters in the questionaire. In general all backends should work.
 
