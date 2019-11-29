@@ -25,9 +25,9 @@ getPresentationQuestionaireData=function(verbose,folder) {
 }
 
 #get all MR data from Presentation
-getPresentationMRData=function(verbose,folder) {
+getPresentationMRData=function(verbose,folder,block="main") {
   ##get MR Data
-  MRData=getDataByDatePresentation(verbose,folder,"","main")
+  MRData=getDataByDatePresentation(verbose,folder,"",block)
   MRData=addDataMRPresentation(MRData)
   return(MRData)
 }
@@ -49,6 +49,10 @@ modifyPresentationQuestionaireData=function(questionaireData) {
 
 #modify MR data from Presentation
 modifyPresentationMRData=function(MRData,outlierFactor) {
+  #rename
+  MRData$reactionTime=MRData$diff
+  MRData$axis=MRData$XYZ
+  MRData$orientation=MRData$orig
   #mark outliers
   MRData=sortOutliers(MRData,outlierFactor)
   MRData$type=as.factor(substring(toChar(MRData$type),4))  #remove rm_
@@ -58,10 +62,6 @@ modifyPresentationMRData=function(MRData,outlierFactor) {
   #modify angles to 360-angle if angle>180, but keep information
   MRData$direction=ifelse(MRData$deg>180,"-",ifelse(MRData$deg==0 | MRData$deg==180,"0","+"))
   MRData$deg=ifelse(MRData$deg>180,360-MRData$deg,MRData$deg)
-  #rename
-  MRData$reactionTime=MRData$diff
-  MRData$axis=MRData$XYZ
-  MRData$orientation=MRData$orig
   return(MRData)
 }
 

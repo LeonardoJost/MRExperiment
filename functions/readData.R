@@ -29,12 +29,12 @@ getQuestionaireData=function(experimentalSoftware,verbose,folder){
   return(questionaireData)
 }
 
-getMRData=function(experimentalSoftware,verbose,folder){
+getMRData=function(experimentalSoftware,verbose,folder,block="main"){
   if (experimentalSoftware=="OpenSesame") {
-    MRData=getOpenSesameMRData(verbose,folder, preText="", part="main",ending="csv")
+    MRData=getOpenSesameMRData(verbose,folder,part=block)
   }
   if (experimentalSoftware=="Presentation") {
-    MRData=getPresentationMRData(verbose,folder)
+    MRData=getPresentationMRData(verbose,folder,block)
   }
   return(MRData)
 }
@@ -49,13 +49,38 @@ modifyQuestionaireData=function(experimentalSoftware,questionaireData) {
   return(questionaireData)
 }
 
-modifyMRData=function(experimentalSoftware,MRData,outlierFactor) {
+modifyMRData=function(experimentalSoftware,verbose,MRData,outlierFactor) {
   if (experimentalSoftware=="OpenSesame") {
     MRData=modifyOpenSesameMRData(MRData,outlierFactor)
+    #name end for each stimulus
+    MRData$endTime=MRData$duration+MRData$reactionTime
   }
   if (experimentalSoftware=="Presentation") {
     MRData=modifyPresentationMRData(MRData,outlierFactor)
+    #name end for each stimulus
+    MRData$endTime=MRData$absTime
   }
+  #sort data by endTime
+  MRData=MRData[order(MRData$ID,MRData$endTime),]
+  #name startTime for each stimulus
+  MRData$startTime=MRData$endTime-MRData$reactionTime
+  #calculate time between end of stimulus and start of next stimulus
+  MRData$pauseTime=NA
+  for (thisID in levels(as.factor(MRData$ID))) {
+    MRDataWithThisID=MRData[which(MRData$ID==thisID),]
+    MRDataWithThisID$pauseTime=NA
+    MRDataWithThisID$pauseTime[2:nrow(MRDataWithThisID)]=
+      (MRDataWithThisID$startTime[2:nrow(MRDataWithThisID)]
+       -MRDataWithThisID$endTime[1:(nrow(MRDataWithThisID)-1)])
+    MRData$pauseTime[which(MRData$ID==thisID)]=MRDataWithThisID$pauseTime
+    if (verbose>2)
+      print(paste("break time for ID ", thisID, 
+                  " mean: ",mean(MRDataWithThisID$pauseTime,na.rm=T),
+                  " sd: ", sd(MRDataWithThisID$pauseTime,na.rm=T)))
+  }
+  if(verbose>1)
+    print(paste("break time for all IDs ", 
+                " mean: ",mean(MRData$pauseTime,na.rm=T),
+                " sd: ", sd(MRData$pauseTime,na.rm=T)))
   return(MRData)
 }
-

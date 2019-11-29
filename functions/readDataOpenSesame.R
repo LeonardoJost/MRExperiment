@@ -26,7 +26,7 @@ getOpenSesameQuestionaireData=function(verbose,folder, preText="", part="questio
 #get all MR data from OpenSesame
 getOpenSesameMRData=function(verbose,folder, preText="", part="main",ending="csv") {
   #get MR data
-  MRData=getDataOpenSesame(verbose,folder, preText="", part="main",ending="csv")
+  MRData=getDataOpenSesame(verbose,folder, preText, part,ending)
   return(MRData)
 }
 

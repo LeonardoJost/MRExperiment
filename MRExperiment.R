@@ -30,20 +30,21 @@ dir.create("figs/MR/accData/")
 ##options, parameters
 options(digits=6)
 #set data folder
-folder="data\\OpenSesame\\"
+folder="data\\MRlibrary\\"
 verbose=1 #detail of output
-experimentalSoftware="OpenSesame" #"OpenSesame" or "Presentation"
+experimentalSoftware="Presentation" #"OpenSesame" or "Presentation"
 questionaireOutFile="output\\questionaire" #.csv added at end, leave empty if no output desired
 handednessGraphFile="figs\\HandednessMW.png" #leave empty if no output desired
 outlierFactor=3 #factor of sd to define outliers in MR
+block="practice"#name of intersting block of data
 
 ##read and write data
 #read data
 questionaireData=getQuestionaireData(experimentalSoftware,verbose,folder)
-MRData=getMRData(experimentalSoftware,verbose,folder)
+MRData=getMRData(experimentalSoftware,verbose,folder,block)
 #modify data #adapt to own data
 questionaireData=modifyQuestionaireData(experimentalSoftware,questionaireData)
-MRData=modifyMRData(experimentalSoftware,MRData,outlierFactor)
+MRData=modifyMRData(experimentalSoftware,verbose,MRData,outlierFactor)
 #calculate means from questionaire
 calculateMeansQuestionaire(questionaireData,questionaireOutFile,handednessGraphFile)
 #remove not analyzed questionaire data
@@ -54,15 +55,7 @@ dataset=merge(MRData,questionaireData,by="ID")
 dataset$ID=as.factor(dataset$ID)
 levels(dataset$ID)=paste("id",sample.int(length(levels(dataset$ID))),sep="")
 
-#check average break time between stimuli
-dataset$endTime=dataset$duration+dataset$reactionTime
-dataset$pauseTime=0
-dataset$pauseTime[2:nrow(dataset)]=dataset$duration[2:nrow(dataset)]-dataset$endTime[1:(nrow(dataset)-1)]
-mean(dataset$pauseTime[which(dataset$pauseTime>0)])
-dataset$endTime=dataset$time_Stimulus+dataset$reactionTime
-dataset$pauseTime=0
-dataset$pauseTime[2:nrow(dataset)]=dataset$time_Stimulus[2:nrow(dataset)]-dataset$endTime[1:(nrow(dataset)-1)]
-mean(dataset$pauseTime[which(dataset$pauseTime>0)])
+
 
 #save to csv
 write.table(dataset,file="output\\dataset.csv",sep=";", col.names=NA)
