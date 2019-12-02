@@ -19,7 +19,7 @@ source("functions/helpers.R")
 #get all questionaire data from OpenSesame
 getOpenSesameQuestionaireData=function(verbose,folder, preText="", part="questionaire",ending="csv") {
   ##get questionaire data
-  questionaireData=getQuestionaireDataOpenSesame(verbose,folder, preText="", part="questionaire",ending="csv")
+  questionaireData=getQuestionaireDataOpenSesame(verbose,folder, preText, part,ending)
   return(questionaireData)
 }
 
@@ -46,14 +46,21 @@ modifyOpenSesameQuestionaireData=function(questionaireData) {
 }
 
 #modify MR Data from OpenSesame
-modifyOpenSesameMRData=function(MRData,outlierFactor) {
+#MRData: dataset
+#outlierFactor: trials deviating by more than outlierFactor*sd from mean will be classified as outliers
+modifyOpenSesameMRData=function(verbose,MRData,outlierFactor) {
   #rename variables
   MRData$deg=toNumeric(MRData$angle)
   MRData$reactionTime=MRData$response_time
-  MRData=sortOutliers(MRData,outlierFactor)
+  MRData=sortOutliers(verbose,MRData,outlierFactor)
+  if (verbose>1) {
+    print(paste(sum(MRData$outlier),"outliers detected (deviating by more than",
+                outlierfactor,"standard deviations from mean (by degree)"))
+  }
   MRData$type=ifelse(MRData$correct==1,"hit","incorrect")
   MRData$typeOutlier=ifelse(MRData$outlier,paste(toChar(MRData$type),"Outlier",sep=""),toChar(MRData$type))
   MRData$correctSide=ifelse(MRData$correct_response==1,"left","right")
+  MRData$modelNumber=paste("m",stringToNum(MRData$model),sep="")
   MRData$absTime=MRData$duration
   #save original degrees of rotation
   MRData$originalDegrees=MRData$deg
@@ -63,14 +70,19 @@ modifyOpenSesameMRData=function(MRData,outlierFactor) {
   return(MRData)
 }
 
+#reads data from files
 #verbose: detail of output
 #folder: folder to search in for files
 #preText: Filter, only get files which start with preText
 #part: Filter, only get part of data in block, that contains part in the name
+#ending: filetype of files
 getDataOpenSesame=function(verbose, folder, preText="", part="main",ending="csv") {
   #get files in folger (Reaction Time Data)
   fileNames=getFileNames(folder,preText,ending)
-  if (verbose>2) {print(fileNames)}
+  if (verbose>2) {
+    print("list of files:\n")
+    print(fileNames)
+  }
   #initialize empty dataframe
   dat=data.frame()
   #loop through all files
@@ -80,6 +92,9 @@ getDataOpenSesame=function(verbose, folder, preText="", part="main",ending="csv"
     rawData=read.csv(paste(folder,fileName,sep=""),header=TRUE,fill=TRUE, sep=",")
     #choose only specified block
     dataset=subset(rawData,grepl(part,aaBlock))
+    if (verbose>3) {
+      print(paste("read", nrow(dataset), "values from file:",fileName,"\n"))
+    }
     #add to dataset
     dat=rbind(dat,dataset)
   }
@@ -91,14 +106,19 @@ getDataOpenSesame=function(verbose, folder, preText="", part="main",ending="csv"
   return(dat)
 }
 
+#reads data from files
 #verbose: detail of output
 #folder: folder to search in for files
 #preText: Filter, only get files which start with preText
 #part: Filter, only get part of data in block, that contains part in the name
+#ending: filetype of files
 getQuestionaireDataOpenSesame=function(verbose, folder, preText="", part="questionaire",ending="csv") {
   #get files in folger (Reaction Time Data)
   fileNames=getFileNames(folder,preText,ending)
-  if (verbose>2) {print(fileNames)}
+  if (verbose>2) {
+    print("list of files:\n")
+    print(fileNames)
+  }
   #initialize empty dataframe
   dat=data.frame()
   #loop through all files
@@ -110,7 +130,10 @@ getQuestionaireDataOpenSesame=function(verbose, folder, preText="", part="questi
     dataset=subset(rawData,grepl(part,aaBlock))
     #add interesting data to vector
     values=append(toChar(dataset$angle),dataset$aaID[1])
-    if (verbose>1) {print(values)}
+    if (verbose>3) {
+      print(paste("read values for file:",fileName,"\n"))
+      print(values)
+    }
     #add to dataset
     dat=rbind(dat,values,stringsAsFactors = FALSE)
     #set names according to questionIDs

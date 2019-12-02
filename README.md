@@ -27,7 +27,7 @@ Reading txt files is by default using UTF-8-BOM. This should read both UTF-8 and
 
 Xpyriment is used as backend because psycho causes errors when entering non-ASCII characters in the questionaire. In general all backends should work.
 
-Timing calculations for feedback and fixations try to take into account calculation and preparation times. In first tests, accuracy is within 60ms of the specified time (but mostly closer and independent of backend), which is closer than specifying the time directly into the sketchpads for feedback and fixations (~110ms in that case) (although the start time is calculated on the basis of the stimulus start time and the reaction time, not the actual time at which the feedback/fixation is presented, i.e. we try to control the pause between reaction and presentation of the next stimulus, not the time that the fixation/feedback is actually shown. This should only be influenced by monitor refresh rate and at 60Hz timing differences of ~15ms can occur).
+Timing calculations for feedback and fixations try to take into account calculation and preparation times. In first tests, accuracy is within 60ms of the specified time (but mostly closer and independent of backend), which is closer than specifying the time directly into the sketchpads for feedback and fixations (100-200ms in that case, depending on backend) (although the start time is calculated on the basis of the stimulus start time and the reaction time, not the actual time at which the feedback/fixation is presented, i.e. we try to control the pause between reaction and presentation of the next stimulus, not the time that the fixation/feedback is actually shown. This should in theory only be influenced by monitor refresh rate and at 60Hz timing differences of ~15ms can occur).
 
 The questionaire repeats questions that are not answered (as there is an option to skip questions available). 
 
@@ -41,7 +41,9 @@ The random order was changed such that all stimuli will be shown once (in random
 The same random stimulus order is used for all blocks (practice and main), such that the next block continues after the last stimulus of the previous block.
 
 ## R Code
-R code is in all other files. Data folder contains some example data, so the code can be executed.
+R code is in all other files. The testData folder contains some example data, so the code can be executed.
+
+R code will read data from files in the specified folder and do some calculations (average participant data, outlier detection for mental rotation data, plotting and averages for mental rotation data) and contains code for basic statistical analysis (has to be adapted to individual case).
 
 ## Literature 
 Jost, L., & Jansen, P. (2019). A novel approach to analyzing mirrored stimuli in chronometric mental rotation and description of a flexible extended library of stimuli. Unpublished manuscript.

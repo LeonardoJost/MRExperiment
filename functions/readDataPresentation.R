@@ -28,7 +28,6 @@ getPresentationQuestionaireData=function(verbose,folder) {
 getPresentationMRData=function(verbose,folder,block="main") {
   ##get MR Data
   MRData=getDataByDatePresentation(verbose,folder,"",block)
-  MRData=addDataMRPresentation(MRData)
   return(MRData)
 }
 
@@ -48,13 +47,20 @@ modifyPresentationQuestionaireData=function(questionaireData) {
 }
 
 #modify MR data from Presentation
-modifyPresentationMRData=function(MRData,outlierFactor) {
+#MRData: dataset
+#outlierFactor: trials deviating by more than outlierFactor*sd from mean will be classified as outliers
+modifyPresentationMRData=function(verbose,MRData,outlierFactor) {
+  MRData=addDataMRPresentation(MRData)
   #rename
   MRData$reactionTime=MRData$diff
   MRData$axis=MRData$XYZ
   MRData$orientation=MRData$orig
   #mark outliers
-  MRData=sortOutliers(MRData,outlierFactor)
+  MRData=sortOutliers(verbose,MRData,outlierFactor)
+  if (verbose>1) {
+    print(paste(sum(MRData$outlier),"outliers detected (deviating by more than",
+                outlierfactor,"standard deviations from mean (by degree)"))
+  }
   MRData$type=as.factor(substring(toChar(MRData$type),4))  #remove rm_
   MRData$typeOutlier=ifelse(MRData$outlier,paste(toChar(MRData$type),"Outlier",sep=""),toChar(MRData$type))
   #save original degrees of rotation
@@ -65,6 +71,7 @@ modifyPresentationMRData=function(MRData,outlierFactor) {
   return(MRData)
 }
 
+#reads data from files
 #verbose: detail of output
 #folder: folder to search in for questionaire data
 #preText: Filter, only get files which start with preText
@@ -98,6 +105,7 @@ getDataByIdPresentation=function(verbose, folder, preText, idLength) {
   return(dat)
 }
 
+#reads data from files
 #verbose: detail of output
 #folder: folder to search in for questionaire data
 #preText: Filter, only get files which start with preText
@@ -129,6 +137,8 @@ getDataByDatePresentation=function(verbose, folder, preText, part="") {
   return(dat)
 }
 
+#adds information about model and correct side of answer to dataset
+#dat: dataset to by modified
 addDataMRPresentation=function(dat) {
   dat$modelNumber=paste("m",stringToNum(dat$model),sep="")
   dat$correctSide=ifelse(dat$orig==TRUE,ifelse(grepl("A",dat$model,fixed=TRUE),"Left","Right"),

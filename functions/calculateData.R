@@ -17,7 +17,7 @@
 source("functions/helpers.R")
 
 #mark outliers, whic deviate by more than sdFactor*sd from the mean by degree
-sortOutliers=function(MRData,sdFactor) {
+sortOutliers=function(verbose,MRData,sdFactor) {
   degrees=levels(as.factor(MRData$deg))
   #allData$type=toChar(allData$type)
   MRData$outlier=FALSE
@@ -25,7 +25,9 @@ sortOutliers=function(MRData,sdFactor) {
     degreeSubset=MRData[which(MRData$deg==degree),]
     meanRT=mean(degreeSubset$reactionTime)
     sdRT=sd(degreeSubset$reactionTime)
-    #print(paste(degree,":",meanRT,"+-",sdRT,sep=""))
+    if (verbose>2){
+      print(paste("mean+-sd at angle ",degree," : ",meanRT,"+-",sdRT,sep=""))
+    }
     MRData$outlier[which(MRData$deg==degree & abs(MRData$reactionTime-meanRT)>sdFactor*sdRT)]=TRUE
   }
   #allData$type=as.factor(allData$type)

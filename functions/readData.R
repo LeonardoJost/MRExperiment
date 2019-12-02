@@ -19,44 +19,82 @@ source("functions/readDataPresentation.R", encoding="utf-8")
 source("functions/readDataOpenSesame.R", encoding="utf-8")
 source("functions/calculateData.R", encoding="utf-8")
 
+#get questionaireData
+#experimentalSoftware: which software was used to generate data? Presentation or OpenSesame
+#verbose: detail of output
+#folder: folder to search in for data
 getQuestionaireData=function(experimentalSoftware,verbose,folder){
+  if (verbose>1) {
+    print("Reading questionaire data from files ...")
+  }
   if (experimentalSoftware=="OpenSesame") {
     questionaireData=getOpenSesameQuestionaireData(verbose,folder, preText="", part="questionaire",ending="csv")
   }
   if (experimentalSoftware=="Presentation") {
     questionaireData=getPresentationQuestionaireData(verbose,folder)
   }
+  if (verbose>1) {
+    print(paste("Questionaire data from",nrow(questionaireData),"participants was read."))
+  }
   return(questionaireData)
 }
 
+#get mental rotation data
+#experimentalSoftware: which software was used to generate data? Presentation or OpenSesame
+#verbose: detail of output
+#folder: folder to search in for data
+#block: name of block of interest
 getMRData=function(experimentalSoftware,verbose,folder,block="main"){
+  if (verbose>1) {
+    print(paste("Reading mental rotation data for block",block,"from files"))
+  }
   if (experimentalSoftware=="OpenSesame") {
     MRData=getOpenSesameMRData(verbose,folder,part=block)
   }
   if (experimentalSoftware=="Presentation") {
     MRData=getPresentationMRData(verbose,folder,block)
   }
+  if (verbose>1) {
+    print(paste("Mental rotation data from",length(unique(MRData$ID)),"participants was read. (",nrow(MRData),"trials in total)"))
+  }
   return(MRData)
 }
 
+#modifies the questionairedata, calculates some additional information
+#experimentalSoftware: which software was used to generate data? Presentation or OpenSesame
+#questionaireData: dataset
 modifyQuestionaireData=function(experimentalSoftware,questionaireData) {
+  if (verbose>1) {
+    print("Doing calculations on questionaire data ...")
+  }
   if (experimentalSoftware=="OpenSesame") {
     questionaireData=modifyOpenSesameQuestionaireData(questionaireData)
   }
   if (experimentalSoftware=="Presentation") {
     questionaireData=modifyPresentationQuestionaireData(questionaireData)
   }
+  if (verbose>1) {
+    print("Calculations on questionaire data finished.")
+  }
   return(questionaireData)
 }
 
+#modifies the mental rotation data, calculates some additional information
+#experimentalSoftware: which software was used to generate data? Presentation or OpenSesame
+#verbose: detail of output
+#MRData: dataset
+#outlierFactor: trials deviating by more than outlierFactor*sd from mean will be classified as outliers
 modifyMRData=function(experimentalSoftware,verbose,MRData,outlierFactor) {
+  if (verbose>1) {
+    print("Doing calculations on mental rotation data ...")
+  }
   if (experimentalSoftware=="OpenSesame") {
-    MRData=modifyOpenSesameMRData(MRData,outlierFactor)
+    MRData=modifyOpenSesameMRData(verbose,MRData,outlierFactor)
     #name end for each stimulus
     MRData$endTime=MRData$duration+MRData$reactionTime
   }
   if (experimentalSoftware=="Presentation") {
-    MRData=modifyPresentationMRData(MRData,outlierFactor)
+    MRData=modifyPresentationMRData(verbose,MRData,outlierFactor)
     #name end for each stimulus
     MRData$endTime=MRData$absTime
   }
@@ -78,9 +116,11 @@ modifyMRData=function(experimentalSoftware,verbose,MRData,outlierFactor) {
                   " mean: ",mean(MRDataWithThisID$pauseTime,na.rm=T),
                   " sd: ", sd(MRDataWithThisID$pauseTime,na.rm=T)))
   }
-  if(verbose>1)
+  if(verbose>1) {
     print(paste("break time for all IDs ", 
                 " mean: ",mean(MRData$pauseTime,na.rm=T),
                 " sd: ", sd(MRData$pauseTime,na.rm=T)))
+    print("Calculations on mental rotation data finished.")
+  }
   return(MRData)
 }

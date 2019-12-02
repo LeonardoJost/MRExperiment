@@ -31,12 +31,13 @@ dir.create("figs/MR/accData/")
 options(digits=6)
 #set data folder
 folder="data\\MRlibrary\\"
-verbose=1 #detail of output
+verbose=2 #detail of output
 experimentalSoftware="Presentation" #"OpenSesame" or "Presentation"
 questionaireOutFile="output\\questionaire" #.csv added at end, leave empty if no output desired
 handednessGraphFile="figs\\HandednessMW.png" #leave empty if no output desired
 outlierFactor=3 #factor of sd to define outliers in MR
-block="practice"#name of intersting block of data
+block="main"#name of intersting block of data
+questionaireDataCols=c("ID","Gender","MRexperience") #which questionaire columns shall be kept for statistical analysis
 
 ##read and write data
 #read data
@@ -45,19 +46,17 @@ MRData=getMRData(experimentalSoftware,verbose,folder,block)
 #modify data #adapt to own data
 questionaireData=modifyQuestionaireData(experimentalSoftware,questionaireData)
 MRData=modifyMRData(experimentalSoftware,verbose,MRData,outlierFactor)
-#calculate means from questionaire
-calculateMeansQuestionaire(questionaireData,questionaireOutFile,handednessGraphFile)
-#remove not analyzed questionaire data
-questionaireData=subset(questionaireData,select=c("ID","Gender","Experience"))
+#calculate means from questionaire (and save to csv)
+calculateMeansQuestionaire(verbose,questionaireData,questionaireOutFile,handednessGraphFile)
+#remove not analyzed questionaire data to protect participant identity
+questionaireData=subset(questionaireData,select=questionaireDataCols)
 #unify data
 dataset=merge(MRData,questionaireData,by="ID")
-#anonymise IDs
+#anonymise IDs to protect participant identity
 dataset$ID=as.factor(dataset$ID)
 levels(dataset$ID)=paste("id",sample.int(length(levels(dataset$ID))),sep="")
 
-
-
-#save to csv
+#save full dataset to csv
 write.table(dataset,file="output\\dataset.csv",sep=";", col.names=NA)
 
 ##plot reaction time and accuracy by interesting conditions
@@ -69,7 +68,7 @@ generateTableAndGraphsForCondition(dataset,"sideXaxis")
 dataset$cond=paste(dataset$correctSide,dataset$orientation,sep="*")
 generateTableAndGraphsForCondition(dataset,"sideXmirror")
 dataset$cond=dataset$model
-generateTableAndGraphsForCondition(dataset,"model")
+generateTableAndGraphsForCondition(dataset,"modelNumber")
 dataset$cond=as.factor(dataset$deg)
 generateTableAndGraphsForCondition(dataset,"deg",FALSE)
 dataset$cond=paste(dataset$deg,dataset$correctSide,sep="*")

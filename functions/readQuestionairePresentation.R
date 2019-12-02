@@ -80,7 +80,7 @@ getQuestionaireDataByDatePresentation=function(verbose, folder, preText,firstQue
     }
     #add pseudonym to matrix
     dataMatrix[rows,fileIndex]=as.character(fileIndex)
-    if (verbose>1) {print(dataMatrix[rows,fileIndex])}
+    if (verbose>2) {print(paste("read ID",dataMatrix[rows,fileIndex]))}
   }
   dat=as.data.frame(t(dataMatrix))
   names(dat)[rows]="ID"
