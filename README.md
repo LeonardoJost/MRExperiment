@@ -21,7 +21,9 @@ All stimuli and txt files containing instructions and questions should be loaded
 
 Questions should be entered the following way: (Type)(Options)(ID)(condition). Type should be either: Multiple (for multiple choice), TextInput (for custom text input), ManualCode (requires exact entering of the question ID in a text field to continue), or ShowText (default, only ok button is presented as answer). If type is Multiple, options should include all possible answers separated by ',' (no spaces), for other Types no options should be entered. ID is optional, default is the number of the question. Conditions can be entered if some questions should only be presented depending on previous answers. At the moment only 'ID==answer' is supported and the question is only presented if the question with 'ID' is anwered with 'answer'.
 
-The blocks are by default controlled by time and the number of stimuli. If either all stimuli are processed or time is over, the experiment should finish. The transition between blocks is only controlled by time and has to be changed by hand, if necessary.
+Instructions are shown for a fixed time before allowing continueing to the trials to prevent accidental skipping. The txt may contain a block preceeeded by (Continue), which is shown only after the fixed time and replaced by empty lines (containing dots as a workaroung for text alignment) before.
+
+The blocks are by default controlled by time and the number of stimuli. If either all stimuli are processed or time is over, the experiment should finish. The transition between blocks is only controlled by time but can be changed to number of stimuli easily in the break if condition of the ShowStimuli loop.
 #### notes
 Reading txt files is by default using UTF-8-BOM. This should read both UTF-8 and UTF-8-BOM encoded files correctly, while only reading with UTF-8 creates problems when reading UTF-8-BOM encoded files (concerning question type for the first question).
 

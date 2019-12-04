@@ -8,5 +8,5 @@ Antworten sie so schnell wie möglich, aber machen sie möglichst wenig Fehler.
 Sie erhalten kein Feedback mehr, stattdessen sehen Sie nach jeder Aufgabe ein
 FX in der Mitte des Bildschirms.
 
-Drücken sie die linke oder rechte Maustaste, um fortzufahren,
+(Continue)Drücken sie die linke oder rechte Maustaste, um fortzufahren,
 wenn Sie sich bereit fühlen.

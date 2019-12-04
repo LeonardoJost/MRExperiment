@@ -17,4 +17,4 @@ Antworten sie so schnell wie möglich, aber machen sie möglichst wenig Fehler.
 Zunächst haben Sie 10 Minuten zum Üben und Sie erhalten nach jeder Aufgabe Feedback, 
 ob Ihre Antwort richtig oder falsch war. (F1 - richtig, F2 - falsch)
 
-Drücken Sie die linke oder rechte Maustaste um das Experiment zu starten.
+(Continue)Drücken Sie die linke oder rechte Maustaste um das Experiment zu starten.
