@@ -19,20 +19,15 @@ library(lme4)
 
 #analysis of mental rotation
 #prepare data
-dataset=merge(MRData,questionaireData,by="ID")
-
-#basic inspection
-levels(as.factor(dataset$ID))
-temp=as.data.frame(table(dataset$ID))
-temp$Freq
-sum(dataset$outlier)
+#do not modify original dataset
+datasetForLMM=dataset
 
 #scaling
-dataset$deg=dataset$deg/100
-dataset$absTime=dataset$absTime/1800000 #30 minutes= 1000(ms/s)*60(s/min)*30min=1800000
+datasetForLMM$deg=datasetForLMM$deg/100
+datasetForLMM$absTime=datasetForLMM$absTime/1800000 #30 minutes= 1000(ms/s)*60(s/min)*30min=1800000
 
 #prepare dataset for reaction Time analysis and accuracy analysis
-dataset.noOutlier=dataset[which(!dataset$outlier),]
+dataset.noOutlier=datasetForLMM[which(!datasetForLMM$outlier),]
 dataset.rt=dataset.noOutlier[which(dataset.noOutlier$typeOutlier=="hit"),]
 dataset.acc=dataset.noOutlier
 dataset.rt.axis=dataset.rt[which(dataset.rt$deg>0),]
@@ -44,7 +39,7 @@ dataset.acc.axis=dataset.acc[which(dataset.acc$deg>0),]
 m0=lmer(diff~allFixedEffects+(rs|ID)+(rs|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
 print(summary(m0),corr=FALSE)
 summary(rePCA(m0))
-#remove correlation
+#remove random slope correlation
 m1=lmer(diff~allFixedEffects+(rs||ID)+(rs||modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
 VarCorr(m1)
 anova(m1, m0)
@@ -52,15 +47,19 @@ summary(rePCA(m1))
 #remove parameter with correlation 1 and sd 0 or very close
 
 
-#add correlation
+#add random slope correlation again
 
-#-> use model m6
+#find final model
+
 ##remove nonsignificant fixed effects
-m7=lmer(diff~allFixedEffects+(rs|ID)+(rs|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
-m7.summary=modelSummary(m7,0)
+modelWithRS=lmer(diff~allFixedEffects+(rs|ID)+(rs|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
+modelWithRS.summary=modelSummary(modelWithRS,0)
 #stepwise remove nonsignificant fixed effect with lowest lrt
 
 #all values significant
+
+#visual inspection of normality
+plot(finalModelWithRS)
 
 
 
@@ -89,3 +88,5 @@ summary(rePCA(a1))
 #stepwise remove nonsignificant fixed effect with lowest lrt
 
 #all values significant
+
+#visual inspection of normality

@@ -55,7 +55,7 @@ modifyOpenSesameMRData=function(verbose,MRData,outlierFactor) {
   MRData=sortOutliers(verbose,MRData,outlierFactor)
   if (verbose>1) {
     print(paste(sum(MRData$outlier),"outliers detected (deviating by more than",
-                outlierfactor,"standard deviations from mean (by degree)"))
+                outlierFactor,"standard deviations from mean (by degree)"))
   }
   MRData$type=ifelse(MRData$correct==1,"hit","incorrect")
   MRData$typeOutlier=ifelse(MRData$outlier,paste(toChar(MRData$type),"Outlier",sep=""),toChar(MRData$type))
@@ -91,7 +91,7 @@ getDataOpenSesame=function(verbose, folder, preText="", part="main",ending="csv"
     #read data in file as table
     rawData=read.csv(paste(folder,fileName,sep=""),header=TRUE,fill=TRUE, sep=",")
     #choose only specified block
-    dataset=subset(rawData,grepl(part,aaBlock))
+    dataset=subset(rawData,aaBlock %in% part)
     if (verbose>3) {
       print(paste("read", nrow(dataset), "values from file:",fileName,"\n"))
     }

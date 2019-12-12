@@ -59,7 +59,7 @@ modifyPresentationMRData=function(verbose,MRData,outlierFactor) {
   MRData=sortOutliers(verbose,MRData,outlierFactor)
   if (verbose>1) {
     print(paste(sum(MRData$outlier),"outliers detected (deviating by more than",
-                outlierfactor,"standard deviations from mean (by degree)"))
+                outlierFactor,"standard deviations from mean (by degree)"))
   }
   MRData$type=as.factor(substring(toChar(MRData$type),4))  #remove rm_
   MRData$typeOutlier=ifelse(MRData$outlier,paste(toChar(MRData$type),"Outlier",sep=""),toChar(MRData$type))
@@ -122,7 +122,7 @@ getDataByDatePresentation=function(verbose, folder, preText, part="") {
     fileName=fileNames[fileIndex]
     #read data in file as table
     rawData=read.table(paste(folder,fileName,sep=""),header=TRUE,fill=TRUE)
-    dataset=subset(rawData,diff>0 & grepl(part,block),select = c(block,model,mirror,angle,diff,type,time2))
+    dataset=subset(rawData,diff>0 & block %in% part,select = c(block,model,mirror,angle,diff,type,time2))
     dataset$orig=grepl("orig",dataset$mirror,fixed=TRUE)
     dataset$XYZ=ifelse(grepl("X",dataset$mirror,fixed=TRUE),"X",
                      ifelse(grepl("Y",dataset$mirror,fixed=TRUE),"Y","Z"))

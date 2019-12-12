@@ -22,20 +22,15 @@ library(optimx)
 
 #analysis of mental rotation
 #prepare data
-dataset=merge(MRData,questionaireData,by="ID")
-
-#basic inspection
-levels(as.factor(dataset$ID))
-temp=as.data.frame(table(dataset$ID))
-temp$Freq
-sum(dataset$outlier)
+#do not modify original dataset
+datasetForLMM=dataset
 
 #scaling
-dataset$deg=dataset$deg/100
-dataset$absTime=dataset$absTime/1800000 #30 minutes= 1000(ms/s)*60(s/min)*30min=1800000
+datasetForLMM$deg=datasetForLMM$deg/100
+datasetForLMM$absTime=datasetForLMM$absTime/1800000 #30 minutes= 1000(ms/s)*60(s/min)*30min=1800000
 
 #prepare dataset for reaction Time analysis and accuracy analysis
-dataset.noOutlier=dataset[which(!dataset$outlier),]
+dataset.noOutlier=datasetForLMM[which(!datasetForLMM$outlier),]
 dataset.rt=dataset.noOutlier[which(dataset.noOutlier$typeOutlier=="hit"),]
 dataset.acc=dataset.noOutlier
 dataset.rt.axis=dataset.rt[which(dataset.rt$deg>0),]

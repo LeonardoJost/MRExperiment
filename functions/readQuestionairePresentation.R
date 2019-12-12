@@ -92,55 +92,55 @@ removeRows=function(vec,start) {
   return(vec[min(which(vec==start)):nrow(vec),])
 }
 
-addDataByID=function(verbose,dat,dat2){
-  datID=as.vector(dat[,"ID"])
-  dat2ID=as.vector(dat2[,"ID"])
-  if("ID2" %in% colnames(dat2)) {
-    dat2ID2=as.vector(dat2[,"ID2"])
-    imax=2
-  } else {
-    dat2ID2=rep("",length(datID))
-    imax=1
-  }
-  #rewrite IDs (save both IDs in data frame, save ID2 first to preserve original ID)
-  for (i in imax:1) {
-    #helpvector
-    vec=c(1:nrow(dat))
-    for (j in 1:nrow(dat)) {
-      #if id is not found, print id
-      if (length(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])==0) {
-        print(datID[j])
-      }
-      #add data
-      vec[j]=paste(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])
-    }
-    if (verbose>3) {print(vec)}
-    dat[[names(dat2)[i]]]=vec
-  }
-  #get data from other columns
-  for (i in (1+imax):ncol(dat2)) {
-    #helpvector
-    vec=c(1:nrow(dat))
-    for (j in 1:nrow(dat)) {
-      #if id is not found, print id
-      if (length(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])==0) {
-        print(datID[j])
-        vec[j]=""
-      } else {
-      #add data
-        vec[j]=paste(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])
-      }
-    }
-    if (verbose>3) {print(vec)}
-    dat[[names(dat2)[i]]]=vec
-  }
-  return(dat)
-}
-
-addDataByIDFromCSV=function(verbose,dat, csvFile){
-  #read csv data for hfmax and pmax
-  csvdat=read.csv(csvFile, sep=";",header=TRUE)
-  return(addDataById(verbose,dat,csvdat))
-}
+# addDataByID=function(verbose,dat,dat2){
+#   datID=as.vector(dat[,"ID"])
+#   dat2ID=as.vector(dat2[,"ID"])
+#   if("ID2" %in% colnames(dat2)) {
+#     dat2ID2=as.vector(dat2[,"ID2"])
+#     imax=2
+#   } else {
+#     dat2ID2=rep("",length(datID))
+#     imax=1
+#   }
+#   #rewrite IDs (save both IDs in data frame, save ID2 first to preserve original ID)
+#   for (i in imax:1) {
+#     #helpvector
+#     vec=c(1:nrow(dat))
+#     for (j in 1:nrow(dat)) {
+#       #if id is not found, print id
+#       if (length(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])==0) {
+#         print(datID[j])
+#       }
+#       #add data
+#       vec[j]=paste(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])
+#     }
+#     if (verbose>3) {print(vec)}
+#     dat[[names(dat2)[i]]]=vec
+#   }
+#   #get data from other columns
+#   for (i in (1+imax):ncol(dat2)) {
+#     #helpvector
+#     vec=c(1:nrow(dat))
+#     for (j in 1:nrow(dat)) {
+#       #if id is not found, print id
+#       if (length(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])==0) {
+#         print(datID[j])
+#         vec[j]=""
+#       } else {
+#       #add data
+#         vec[j]=paste(dat2[dat2ID==datID[j] | dat2ID2==datID[j],i])
+#       }
+#     }
+#     if (verbose>3) {print(vec)}
+#     dat[[names(dat2)[i]]]=vec
+#   }
+#   return(dat)
+# }
+# 
+# addDataByIDFromCSV=function(verbose,dat, csvFile){
+#   #read csv data for hfmax and pmax
+#   csvdat=read.csv(csvFile, sep=";",header=TRUE)
+#   return(addDataById(verbose,dat,csvdat))
+# }
 
 
