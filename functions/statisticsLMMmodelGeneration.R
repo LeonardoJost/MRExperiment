@@ -36,15 +36,15 @@ dataset.acc.axis=dataset.acc[which(dataset.acc$deg>0),]
 ####adopt individually
 ##reaction time with axis
 #model selection
-m0=lmer(diff~allFixedEffects+(rs|ID)+(rs|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
+m0=lmer(reactionTime~allFixedEffects+(rs|ID)+(rs|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
 print(summary(m0),corr=FALSE)
 summary(rePCA(m0))
 #remove random slope correlation
-m1=lmer(diff~allFixedEffects+(rs||ID)+(rs||modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
+m1=lmer(reactionTime~allFixedEffects+(rs||ID)+(rs||modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
 VarCorr(m1)
 anova(m1, m0)
 summary(rePCA(m1))
-#remove parameter with correlation 1 and sd 0 or very close
+#remove parameter with correlation 1 and sd 0 or very close or NaN
 
 
 #add random slope correlation again
@@ -52,7 +52,7 @@ summary(rePCA(m1))
 #find final model
 
 ##remove nonsignificant fixed effects
-modelWithRS=lmer(diff~allFixedEffects+(rs|ID)+(rs|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
+modelWithRS=lmer(reactionTime~allFixedEffects+(rs|ID)+(rs|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
 modelWithRS.summary=modelSummary(modelWithRS,0)
 #stepwise remove nonsignificant fixed effect with lowest lrt
 
@@ -72,16 +72,12 @@ a1=glmer((type=="hit")~allFixedEffects+(allFixedEffects||ID)+(allFixedEffects||m
 VarCorr(a1)
 anova(a1, a0)
 summary(rePCA(a1))
-#remove parameter with correlation 1 and NaN
+#remove parameter with correlation 1 and sd 0 or very close or NaN
 
 
-#pca shows one component with variance proportion 0 -> drop lower sd?
+#add random slope correlation again
 
-#remove parameter with correlation 1
-
-#add correlation
-
-#pca shows one component with variance proportion 0 -> drop lower sd?
+#find final model
 
 ##remove nonsignificant fixed effects
 

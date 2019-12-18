@@ -48,7 +48,7 @@ generateTableAndGraphsForCondition=function(MRData,conditionString,degreeGraphs=
     #all data
     generateGraphs(MRData,paste("MR/allData/",conditionString,sep=""))
     #average by participants
-    generateGraphs(MRDataMeansByIDDegcond,paste("MR/meanData/",conditionString,sep=""),FALSE)
+    generateGraphs(MRDataMeansByIDDegcond,paste("MR/meanData/",conditionString,sep=""))
     #accuracy is always only for averages
     generateAccGraphs(MRDataMeansByIDDegcond,paste("MR/accData/",conditionString,sep=""))
   }
@@ -59,7 +59,7 @@ generateTableAndGraphsForCondition=function(MRData,conditionString,degreeGraphs=
 }
 
 #generate reaction time graphs
-generateGraphs=function(dataset,title,outliers=TRUE) {
+generateGraphs=function(dataset,title) {
   library(ggplot2)
   #plot data as line graph (mean Data by degree and condition)
   ggplot(dataset,aes(y=reactionTime,x=deg,group=deg,fill=cond, color=cond)) + 

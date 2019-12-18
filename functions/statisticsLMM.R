@@ -39,7 +39,7 @@ dataset.acc.axis=dataset.acc[which(dataset.acc$deg>0),]
 ####adopt individually
 ##reaction time (model including axis)
 #base model
-mBase=lmer(diff~deg+(deg+absTime|ID)+(1|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
+mBase=lmer(reactionTime~fixedEffects+(randomSlopes|ID)+(randomSlopes|modelNumber),data=dataset.rt.axis,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
 mBase.summary=modelSummary(mBase)
 save(mBase,mBase.summary,file="RTModelmBase.RData")
 #split interactions
@@ -51,9 +51,6 @@ save(mBase,mBase.summary,file="RTModelmBase.RData")
 
 ##reaction time (model without axis)
 #base model
-mBase.noAx=lmer(diff~deg+(deg+absTime|ID)+(1|modelNumber),data=dataset.rt,REML=FALSE,control = lmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
-mBase.noAx.summary=modelSummary(mBase.noAx)
-save(mBase.noAx,mBase.noAx.summary,file="RTnoAxModelmBase.RData")
 
 #split interactions
 
@@ -64,7 +61,7 @@ save(mBase.noAx,mBase.noAx.summary,file="RTnoAxModelmBase.RData")
 
 ##accuracy (model including axis)
 #base model
-aBase=glmer((type=="hit")~deg+(deg+absTime+XYZ|ID)+(absTime|modelNumber),family=binomial(),data=dataset.acc.axis,control = glmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
+aBase=glmer((type=="hit")~fixedEffects+(randomSlopes|ID)+(randomSlopes|modelNumber),family=binomial(),data=dataset.acc.axis,control = glmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
 aBase.summary=modelSummary(aBase)
 save(aBase,aBase.summary,file="AccModelaBase.RData")
 
@@ -76,9 +73,7 @@ save(aBase,aBase.summary,file="AccModelaBase.RData")
 
 ##accuracy (model without axis)
 #base model
-abase.noAx=glmer((type=="hit")~deg+(deg+absTime|ID)+(absTime|modelNumber),family=binomial(),data=dataset.acc,control = glmerControl(optimizer = "optimx",optCtrl = list(method = "bobyqa")))
-aBase.noAx.summary=modelSummary(aBase.noAx)
-save(abase.noAx,aBase.noAx.summary,file="AccnoAxModelaBase.RData")
+
 
 #split interactions
 

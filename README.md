@@ -1,12 +1,12 @@
 # MRExperiment
-Project for the mental rotation test. Contains both code for conducting the experiment as well as code for reading and analyzing the data in R.
+Project for the mental rotation test of Jost and Jansen (2019). Contains both code for conducting the experiment as well as code for reading and analyzing the data in R and the resulting dataset.
 
 ## Conducting the Experiment
-The experiment is programmed according to Jost and Jansen, 2019. The runtime of the experiment is controlled by time instead of the number of stimuli, although an adaptation should be easily possible by adding break conditions. For all controlling software, stimuli and system parameters have to be set for usage.
+The experiment is programmed according to Jost and Jansen (2019). The runtime of the experiment is controlled by time instead of the number of stimuli, although an adaptation should be easily possible by adding break conditions. For all controlling software, stimuli and system parameters have to be set for usage.
 
 Both programs contain both the experiment and a questionaire which is read from txt files. The questionaire can be omitted by using empty txt files. Questions are separated by line breaks. "--" serves as a placeholder for line breaks in the questions. "F1", "F2", and "FX" are placeholders for correct feedback, wrong feedback, and fixation symbol in the instructions.
 
-Both programs contain mechanism to prevent returning to the IDE by the participants by requiring exact input.
+Both programs contain mechanism to prevent accidental returning to the IDE by the participants by requiring exact input. (Although all programs allow escaping the experiment by default)
 
 ### Presentation
 This folder contains the Presentation software (Neurobehavioral Systems, Inc., Berkeley, CA, www.neurobs.com) code for the experiment. Development will probably not continue, as open source alternatives such as OpenSesame are available.
@@ -21,7 +21,7 @@ All stimuli and txt files containing instructions and questions should be loaded
 
 Questions should be entered the following way: (Type)(Options)(ID)(condition). Type should be either: Multiple (for multiple choice), TextInput (for custom text input), ManualCode (requires exact entering of the question ID in a text field to continue), or ShowText (default, only ok button is presented as answer). If type is Multiple, options should include all possible answers separated by ',' (no spaces), for other Types no options should be entered. ID is optional, default is the number of the question. Conditions can be entered if some questions should only be presented depending on previous answers. At the moment only 'ID==answer' is supported and the question is only presented if the question with 'ID' is anwered with 'answer'.
 
-Instructions are shown for a fixed time before allowing continueing to the trials to prevent accidental skipping. The txt may contain a block preceeeded by (Continue), which is shown only after the fixed time and replaced by empty lines (containing dots as a workaroung for text alignment) before.
+Instructions are shown for a fixed time before allowing continueing to the trials to prevent accidental skipping. The txt may contain a block preceeeded by (Continue), which is shown only after the fixed time and replaced by empty lines (containing single dots as a workaroung for text alignment) before.
 
 The blocks are by default controlled by time and the number of stimuli. If either all stimuli are processed or time is over, the experiment should finish. The transition between blocks is only controlled by time but can be changed to number of stimuli easily in the break if condition of the ShowStimuli loop.
 #### notes
@@ -45,7 +45,10 @@ The same random stimulus order is used for all blocks (practice and main), such 
 ## R Code
 R code is in all other files. The testData folder contains some example data, so the code can be executed.
 
-R code will read data from files in the specified folder and do some calculations (average participant data, outlier detection for mental rotation data, plotting and averages for mental rotation data) and contains code for basic statistical analysis (has to be adapted to individual case).
+R code will read data from files in the specified folder and do some calculations (average participant data, outlier detection for mental rotation data, plotting and averages for mental rotation data) and contains code for basic statistical analysis using linear mixed models (has to be adapted to individual case).
+
+## Dataset
+The data collected and analyzed by Jost and Jansen (2019) is contained in the folder datasetJostJansen2019. The full data (in long format) is included as a table as well as tables and figures of mean data for all default parameters specified in R code.
 
 ## Literature 
 Jost, L., & Jansen, P. (2019). A novel approach to analyzing mirrored stimuli in chronometric mental rotation and description of a flexible extended library of stimuli. Unpublished manuscript.

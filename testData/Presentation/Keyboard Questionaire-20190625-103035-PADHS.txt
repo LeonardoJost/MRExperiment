@@ -3,9 +3,9 @@
 q2
 ja
 q3
-25
+21
 q4
-männlich
+m
 q5
 not female
 q6
@@ -13,13 +13,13 @@ not female
 q7
 basketball
 q8
-1
+2
 q9
 0
 q10
-2
+1
 q11
-0
+2
 q12
 rr
 q13
@@ -35,9 +35,9 @@ r
 q18
 r
 q19
-r
-q20
 rr
+q20
+r
 q21
 rr
 q22
