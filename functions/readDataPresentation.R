@@ -53,8 +53,7 @@ modifyPresentationMRData=function(verbose,MRData,outlierFactor) {
   MRData=addDataMRPresentation(MRData)
   #rename
   MRData$reactionTime=MRData$diff
-  MRData$axis=MRData$XYZ
-  MRData$orientation=MRData$orig
+  MRData$diff=NULL
   #mark outliers
   MRData=sortOutliers(verbose,MRData,outlierFactor)
   if (verbose>1) {
@@ -122,14 +121,16 @@ getDataByDatePresentation=function(verbose, folder, preText, part="") {
     fileName=fileNames[fileIndex]
     #read data in file as table
     rawData=read.table(paste(folder,fileName,sep=""),header=TRUE,fill=TRUE)
-    dataset=subset(rawData,diff>0 & block %in% part,select = c(block,model,mirror,angle,diff,type,time2))
-    dataset$orig=grepl("orig",dataset$mirror,fixed=TRUE)
-    dataset$XYZ=ifelse(grepl("X",dataset$mirror,fixed=TRUE),"X",
+    dataset=subset(rawData,diff>0 & block %in% part,select = c(block,model,mirror,diff,type,time2))
+    dataset$orientation=ifelse(grepl("orig",dataset$mirror,fixed=TRUE),"a","b")
+    dataset$orientationLeftBase=ifelse(grepl("A",dataset$model,fixed=TRUE),"a","b")
+    dataset$axis=ifelse(grepl("X",dataset$mirror,fixed=TRUE),"X",
                      ifelse(grepl("Y",dataset$mirror,fixed=TRUE),"Y","Z"))
     dataset$deg=as.numeric(gsub("\\D", "", dataset$mirror))
     dataset$number=1:nrow(dataset)
     dataset$absTime=toNumeric(dataset$time2)-toNumeric(dataset$time2[1])+toNumeric(dataset$diff[1])
     dataset$time2=NULL
+    dataset$mirror=NULL
     #add dateOrder as ID to dataset
     dataset$ID=fileIndex
     dat=rbind(dat,dataset)
@@ -141,8 +142,7 @@ getDataByDatePresentation=function(verbose, folder, preText, part="") {
 #dat: dataset to by modified
 addDataMRPresentation=function(dat) {
   dat$modelNumber=paste("m",stringToNum(dat$model),sep="")
-  dat$correctSide=ifelse(dat$orig==TRUE,ifelse(grepl("A",dat$model,fixed=TRUE),"Left","Right"),
-                         ifelse(grepl("A",dat$model,fixed=TRUE),"Right","Left"))
+  dat$correctSide2=ifelse(dat$orientation==dat$orientationLeftBase,"Left","Right")
   #mirrored stimuli -> other side is correct
   return(dat)
 }

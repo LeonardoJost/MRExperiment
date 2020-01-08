@@ -52,6 +52,9 @@ modifyOpenSesameMRData=function(verbose,MRData,outlierFactor) {
   #rename variables
   MRData$deg=toNumeric(MRData$angle)
   MRData$reactionTime=MRData$response_time
+  MRData$angle=NULL
+  MRData$response_time=NULL
+  #mark outliers
   MRData=sortOutliers(verbose,MRData,outlierFactor)
   if (verbose>1) {
     print(paste(sum(MRData$outlier),"outliers detected (deviating by more than",

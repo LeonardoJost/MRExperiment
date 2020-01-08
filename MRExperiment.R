@@ -31,7 +31,7 @@ dir.create("figs/MR/accData/")
 options(digits=6)
 #set data folder
 folder="data\\MRlibrary\\"
-verbose=2 #detail of output
+verbose=3 #detail of output
 experimentalSoftware="Presentation" #"OpenSesame" or "Presentation"
 questionaireOutFile="output\\questionaire" #.csv added at end, leave empty if no output desired
 handednessGraphFile="figs\\HandednessMW.png" #leave empty if no output desired
