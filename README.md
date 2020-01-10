@@ -48,7 +48,7 @@ R code is in all other files. The testData folder contains some example data, so
 R code will read data from files in the specified folder and do some calculations (average participant data, outlier detection for mental rotation data, plotting and averages for mental rotation data) and contains code for basic statistical analysis using linear mixed models (has to be adapted to individual case).
 
 ## Dataset
-The data collected and analyzed by Jost and Jansen (2019) is contained in the folder datasetJostJansen2019. The full data (in long format) is included as a table as well as tables and figures of mean data for all default parameters specified in R code.
+The data collected and analyzed by Jost and Jansen (2019) is contained in the folder datasetJostJansen2019. The full data (in long format) is included as a table (dataset.csv) as well as tables and figures of mean data for all default parameters specified in R code.
 
 ## Literature 
 Jost, L., & Jansen, P. (2019). A novel approach to analyzing mirrored stimuli in chronometric mental rotation and description of a flexible extended library of stimuli. Unpublished manuscript.
