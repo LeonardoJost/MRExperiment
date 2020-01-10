@@ -142,7 +142,7 @@ getDataByDatePresentation=function(verbose, folder, preText, part="") {
 #dat: dataset to by modified
 addDataMRPresentation=function(dat) {
   dat$modelNumber=paste("m",stringToNum(dat$model),sep="")
-  dat$correctSide2=ifelse(dat$orientation==dat$orientationLeftBase,"Left","Right")
+  dat$correctSide=ifelse(dat$orientation==dat$orientationLeftBase,"Left","Right")
   #mirrored stimuli -> other side is correct
   return(dat)
 }
