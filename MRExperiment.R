@@ -30,14 +30,14 @@ dir.create("figs/MR/accData/")
 ##options, parameters
 options(digits=6)
 #set data folder
-folder="data\\MRlibrary\\"
-verbose=2 #detail of output
-experimentalSoftware="Presentation" #"OpenSesame" or "Presentation"
+folder="testData\\OpenSesame\\"
+verbose=3 #detail of output
+experimentalSoftware="OpenSesame" #"OpenSesame" or "Presentation"
 questionaireOutFile="output\\questionaire" #.csv added at end, leave empty if no output desired
 handednessGraphFile="figs\\HandednessMW.png" #leave empty if no output desired
 outlierFactor=3 #factor of sd to define outliers in MR
 block="main"#name of intersting block of data
-questionaireDataCols=c("ID","Gender","MRexperience") #which questionaire columns shall be kept for statistical analysis
+questionaireDataCols=c("ID","Gender","Experience") #which questionaire columns shall be kept for statistical analysis
 
 ##read and write data
 #read data
