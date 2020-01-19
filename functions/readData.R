@@ -91,7 +91,7 @@ modifyMRData=function(experimentalSoftware,verbose,MRData,outlierFactor) {
   if (experimentalSoftware=="OpenSesame") {
     MRData=modifyOpenSesameMRData(verbose,MRData,outlierFactor)
     #name end for each stimulus
-    MRData$endTime=MRData$duration+MRData$reactionTime
+    MRData$endTime=MRData$duration+MRData$reactionTime #use time_Stimulus instead of duration to account for framerate of monitor?
   }
   if (experimentalSoftware=="Presentation") {
     MRData=modifyPresentationMRData(verbose,MRData,outlierFactor)

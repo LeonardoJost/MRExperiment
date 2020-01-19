@@ -15,7 +15,7 @@ set sound_channels 2
 set sound_buf_size 1024
 set sampler_backend legacy
 set round_decimals 2
-set mouse_backend xpyriment
+set mouse_backend legacy
 set keyboard_backend legacy
 set height 1050
 set fullscreen no
@@ -33,7 +33,7 @@ set coordinates uniform
 set compensation 0
 set color_backend legacy
 set clock_backend legacy
-set canvas_backend xpyriment
+set canvas_backend legacy
 set background "#000000"
 
 define sequence BlockSequence
@@ -57,13 +57,13 @@ define loop Blocks
 	set break_if never
 	setcycle 0 aaBlock practice
 	setcycle 0 instructions "InstructionsPractice.txt"
-	setcycle 0 maxDurationMins 0
+	setcycle 0 maxDurationMins 1
 	setcycle 0 feedbackDuration 1000
 	setcycle 0 feedback 1
 	setcycle 1 aaBlock main
 	setcycle 1 instructions "Instructions.txt"
 	setcycle 1 maxDurationMins 1
-	setcycle 1 feedbackDuration 600
+	setcycle 1 feedbackDuration 500
 	setcycle 1 feedback 0
 	run BlockSequence
 
@@ -344,6 +344,8 @@ define inline_script calculateDuration
 	set description "Executes Python code"
 	___run__
 	#calculate end time of feedback from start of stimulus and response time
+	##use this line if you want timing by start time of stimulus
+	#var.duration=var.time_Stimulus-var.startTimeOfBlock
 	var.endTime=var.duration+var.response_time+var.feedbackDuration
 	#check if time is out
 	if var.endTime>var.maxDuration and var.feedback:
@@ -377,11 +379,6 @@ define mouse_response mouseResponse
 	set duration mouseclick
 	set description "Sammelt Mausreaktionen"
 	set allowed_responses "1;3"
-
-define inline_script new_inline_script
-	set description "Executes Python code"
-	set _run ""
-	set _prepare ""
 
 define inline_script parameters
 	set description "Executes Python code"
@@ -532,19 +529,8 @@ define inline_script setTime
 	__end__
 	set _prepare ""
 
-define inline_script setTimeWithCalculations
-	set description "Executes Python code"
-	set _run ""
-	___prepare__
-	#set the time after all preparation is done
-	var.duration=self.time()-var.startTime
-	#log the time needed for preparing the first stimulus (note that index is already increased by 1)
-	#if all blocks use the same stimuli, this could probably suffice to do only once (for index 1) instead of the start of each block, but as this calculation is not computationally intensive it is repeated for every block
-	if var.stimulusNumber==var.firstIndexOfBlock+1:
-		var.prepareTime=var.duration
-	__end__
-
 define logger stimulusLogger
+	# log time_Fixation
 	set description "Registriert experimentelle Daten"
 	set auto_log no
 	log model
