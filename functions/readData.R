@@ -104,17 +104,18 @@ modifyMRData=function(experimentalSoftware,verbose,MRData,outlierFactor) {
   MRData$startTime=MRData$endTime-MRData$reactionTime
   #calculate time between end of stimulus and start of next stimulus
   MRData$pauseTime=NA
-  for (thisID in levels(as.factor(MRData$ID))) {
-    MRDataWithThisID=MRData[which(MRData$ID==thisID),]
-    MRDataWithThisID$pauseTime=NA
-    MRDataWithThisID$pauseTime[2:nrow(MRDataWithThisID)]=
-      (MRDataWithThisID$startTime[2:nrow(MRDataWithThisID)]
-       -MRDataWithThisID$endTime[1:(nrow(MRDataWithThisID)-1)])
-    MRData$pauseTime[which(MRData$ID==thisID)]=MRDataWithThisID$pauseTime
+  MRData$IDblock=paste(MRData$ID,MRData$block,sep="")
+  for (thisIDblock in levels(as.factor(MRData$IDblock))) {
+    MRDataWithThisIDblock=MRData[which(MRData$IDblock==thisIDblock),]
+    MRDataWithThisIDblock$pauseTime=NA
+    MRDataWithThisIDblock$pauseTime[2:nrow(MRDataWithThisIDblock)]=
+      (MRDataWithThisIDblock$startTime[2:nrow(MRDataWithThisIDblock)]
+       -MRDataWithThisIDblock$endTime[1:(nrow(MRDataWithThisIDblock)-1)])
+    MRData$pauseTime[which(MRData$IDblock==thisIDblock)]=MRDataWithThisIDblock$pauseTime
     if (verbose>2)
-      print(paste("break time for ID ", thisID, 
-                  " mean: ",mean(MRDataWithThisID$pauseTime,na.rm=T),
-                  " sd: ", sd(MRDataWithThisID$pauseTime,na.rm=T)))
+      print(paste("break time for ID and block ", thisIDblock, 
+                  " mean: ",mean(MRDataWithThisIDblock$pauseTime,na.rm=T),
+                  " sd: ", sd(MRDataWithThisIDblock$pauseTime,na.rm=T)))
   }
   if(verbose>1) {
     print(paste("break time for all IDs ", 
@@ -122,5 +123,6 @@ modifyMRData=function(experimentalSoftware,verbose,MRData,outlierFactor) {
                 " sd: ", sd(MRData$pauseTime,na.rm=T)))
     print("Calculations on mental rotation data finished.")
   }
+  MRData$IDblock=NULL
   return(MRData)
 }

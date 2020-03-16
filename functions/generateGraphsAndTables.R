@@ -34,8 +34,8 @@ generateTableAndGraphsForCondition=function(MRData,conditionString,degreeGraphs=
   MRDataMeansByDegcond=ddply(MRDataMeansByIDDegcond,
                              .(deg,cond),
                              summarize,
-                             reactionTimeSd=sd(reactionTime),
-                             reactionTime=mean(reactionTime),
+                             reactionTimeSd=sd(reactionTime,na.rm=T),
+                             reactionTime=mean(reactionTime,na.rm=T),
                              accSd=sd(acc),
                              acc=mean(acc))
   #format digits
@@ -74,7 +74,7 @@ generateGraphs=function(dataset,title) {
 generateLineGraphsByTime=function(dataset,title) {
   library(ggplot2)
   #plot data as line graph (mean Data by degree and condition)
-  ggplot(dataset,aes(y=reactionTime,x=absTime, color=cond)) + 
+  ggplot(dataset,aes(y=reactionTime,x=endTime, color=cond)) + 
     geom_smooth(aes(fill=cond)) +
     labs(x="time(ms)",y="Reaction Time(ms)") +theme_bw()
   ggsave(paste("figs/",title,"LinePlotByCondTime.png",sep=""))

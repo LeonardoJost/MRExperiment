@@ -260,7 +260,7 @@ define inline_script ShowForm
 			#do not append more if question is again not answered
 			var.questionAppend=u''
 	#save answer in list (for comparison with conditions)	
-	var.answerList.append((var.thisQuestionID,var.var.responseModified))
+	var.answerList.append((var.thisQuestionID,var.responseModified))
 	__end__
 	set _prepare ""
 
