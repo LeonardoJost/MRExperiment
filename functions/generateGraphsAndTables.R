@@ -17,7 +17,7 @@
 source("functions/helpers.R")
 
 #generate table and graphs for cond from MRData dataset
-generateTableAndGraphsForCondition=function(MRData,conditionString,degreeGraphs=TRUE,timeGraphs=TRUE){
+generateTableAndGraphsForCondition=function(MRData,conditionString,degreeGraphs=TRUE,timeGraphs=TRUE,legendTitle="cond",lineTypes=FALSE){
   #calculate means by angle and interesting condition (important for plotting accuracy)
   #careful with outliers
   library(plyr)
@@ -46,49 +46,59 @@ generateTableAndGraphsForCondition=function(MRData,conditionString,degreeGraphs=
   #generate plots
   if (degreeGraphs) {
     #all data
-    generateGraphs(MRData,paste("MR/allData/",conditionString,sep=""))
+    generateGraphs(MRData,paste("MR/allData/",conditionString,sep=""),legendTitle)
     #average by participants
-    generateGraphs(MRDataMeansByIDDegcond,paste("MR/meanData/",conditionString,sep=""))
+    generateGraphs(MRDataMeansByIDDegcond,paste("MR/meanData/",conditionString,sep=""),legendTitle)
     #accuracy is always only for averages
-    generateAccGraphs(MRDataMeansByIDDegcond,paste("MR/accData/",conditionString,sep=""))
+    generateAccGraphs(MRDataMeansByIDDegcond,paste("MR/accData/",conditionString,sep=""),legendTitle)
   }
   if (timeGraphs) {
     #plot line graphs for changes over time
-    generateLineGraphsByTime(MRData[which(MRData$typeOutlier=="hit"),],paste("MR/Timed/",conditionString,sep=""))
+    generateLineGraphsByTime(MRData[which(MRData$typeOutlier=="hit"),],paste("MR/Timed/",conditionString,sep=""),legendTitle,lineTypes)
   }
 }
 
 #generate reaction time graphs
-generateGraphs=function(dataset,title) {
+generateGraphs=function(dataset,title,legendTitle="cond") {
   library(ggplot2)
   #plot data as line graph (mean Data by degree and condition)
-  ggplot(dataset,aes(y=reactionTime,x=deg,group=deg,fill=cond, color=cond)) + 
+  ggplot(dataset,aes(y=reactionTime,x=deg,group=deg,fill=cond, color=cond, linetype=cond, shape=cond)) + 
     stat_summary(na.rm=TRUE, fun.y=mean, geom="line",  aes(group=cond,color=cond)) +
-    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2,aes(group=cond,color=cond)) +
+    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", size=2,aes(group=cond,color=cond)) +
     stat_summary(fun.data=mean_cl_normal,geom="errorbar", width=0.2,aes(group=cond,color=cond)) +
-    labs(x="degrees(°)",y="Reaction Time(ms)") +theme_bw()
+    scale_x_continuous(breaks=c(0:4)*45)+
+    labs(x="degrees(°)",y="Reaction Time(ms)",color=legendTitle,fill=legendTitle,linetype=legendTitle,shape=legendTitle) + 
+    theme_bw() + theme(legend.position = "bottom")
   ggsave(paste("figs/",title,"LinePlotByCondDegree.png",sep=""))
 }
 
 #generate lins graphs by time
-generateLineGraphsByTime=function(dataset,title) {
+generateLineGraphsByTime=function(dataset,title,legendTitle="cond",lineTypes=FALSE) {
+  if(lineTypes){
+    condForLineTypes=dataset$condForLineTypes
+  } else {
+    condForLineTypes=dataset$cond
+  }
   library(ggplot2)
   #plot data as line graph (mean Data by degree and condition)
-  ggplot(dataset,aes(y=reactionTime,x=endTime, color=cond)) + 
-    geom_smooth(aes(fill=cond)) +
-    labs(x="time(ms)",y="Reaction Time(ms)") +theme_bw()
+  ggplot(dataset,aes(y=reactionTime,x=endTime, color=condForLineTypes, linetype=condForLineTypes)) + 
+    geom_smooth(aes(group=cond,fill=condForLineTypes)) +
+    labs(x="time(ms)",y="Reaction Time(ms)",color=legendTitle,linetype=legendTitle,fill=legendTitle) +
+    theme_bw() +theme(legend.position = "bottom")
   ggsave(paste("figs/",title,"LinePlotByCondTime.png",sep=""))
 }
 
 #generate graphs for accuracy
-generateAccGraphs=function(dataset,title) {
+generateAccGraphs=function(dataset,title,legendTitle="cond") {
   library(ggplot2)
   #plot data as line graph (mean Data by degree and condition)
-  ggplot(dataset,aes(y=acc,x=deg,group=deg,fill=cond, color=cond)) + 
+  ggplot(dataset,aes(y=acc,x=deg,group=deg,fill=cond, color=cond, linetype=cond, shape=cond)) + 
     stat_summary(na.rm=TRUE, fun.y=mean, geom="line",  aes(group=cond,color=cond)) +
-    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", shape=20, size=2,aes(group=cond,color=cond)) +
+    stat_summary(na.rm=TRUE, fun.y=mean, geom="point", size=2,aes(group=cond,color=cond)) +
     stat_summary(fun.data=mean_cl_normal,geom="errorbar", width=0.2,aes(group=cond,color=cond)) +
-    labs(x="degrees(°)",y="accuracy") +theme_bw()
+    scale_x_continuous(breaks=c(0:4)*45)+
+    labs(x="degrees(°)",y="Proportion of correct answers",color=legendTitle,fill=legendTitle,linetype=legendTitle, shape=legendTitle) + 
+    theme_bw() + theme(legend.position = "bottom")
   ggsave(paste("figs/",title,"LinePlotByCondDegree.png",sep=""))
   
 }
