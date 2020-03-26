@@ -83,7 +83,7 @@ generateLineGraphsByTime=function(dataset,title,legendTitle="cond",lineTypes=FAL
   #plot data as line graph (mean Data by degree and condition)
   ggplot(dataset,aes(y=reactionTime,x=endTime, color=condForLineTypes, linetype=condForLineTypes)) + 
     geom_smooth(aes(group=cond,fill=condForLineTypes)) +
-    labs(x="time(ms)",y="Reaction Time(ms)",color=legendTitle,linetype=legendTitle,fill=legendTitle) +
+    labs(x="time(min)",y="Reaction Time(ms)",color=legendTitle,linetype=legendTitle,fill=legendTitle) +
     theme_bw() +theme(legend.position = "bottom")
   ggsave(paste("figs/",title,"LinePlotByCondTime.png",sep=""))
 }

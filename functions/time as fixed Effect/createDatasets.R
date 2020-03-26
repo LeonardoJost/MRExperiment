@@ -21,8 +21,7 @@ getReactionTimeDataset=function(myData){
   datasetForLMM=myData
   #scaling
   datasetForLMM$deg=datasetForLMM$deg/100
-  datasetForLMM$endTime=datasetForLMM$endTime/1800000 #30 minutes= 1000(ms/s)*60(s/min)*30min=1800000
-  datasetForLMM$endTime=datasetForLMM$endTime-10*60*1000/1800000 #normalize time 0 to end of first block
+  datasetForLMM$endTime=datasetForLMM$endTime/30 #30 minutes (time is already in minutes)
   #prepare dataset
   dataset.noOutlier=datasetForLMM[which(!datasetForLMM$outlier),]
   dataset.rt=dataset.noOutlier[which(dataset.noOutlier$typeOutlier=="hit"),]
@@ -37,10 +36,12 @@ getReactionTimeDataset=function(myData){
 
 ### main script
 #load full dataset
-myData=dataset
+myData=read.csv(file="output\\dataset.csv",sep=";")
 #split block by time of 10 minutes
 myData$block=toChar(myData$block)
 myData$block=ifelse(myData$endTime>10*60*1000,ifelse(myData$endTime>20*60*1000,"main3","main2"),"main1")
+#normalize time to minutes
+myData$endTime=myData$endTime/60000 
 
 ### analysis 1
 #all blocks
@@ -50,10 +51,13 @@ datasetA1=getReactionTimeDataset(myData)
 myData$cond=ifelse(myData$block=="main3","20-30min",ifelse(myData$block=="main2","10-20min","0-10min"))
 generateTableAndGraphsForCondition(myData,"block",TRUE,TRUE,"Block")
 
+#normalize time 0 to end of first block
+myData$endTime=myData$endTime-10
+
 ### analysis 2
 #blocks 1 and 3 but move block 3 in time to block 2
 myData13=myData[which(myData$block!="main2"),]
-myData13$endTime[which(myData13$block=="main3")]=myData13$endTime[which(myData13$block=="main3")]-10*60*1000
+myData13$endTime[which(myData13$block=="main3")]=myData13$endTime[which(myData13$block=="main3")]-10
 datasetA2=getReactionTimeDataset(myData13)
 
 ### analysis 3-5
