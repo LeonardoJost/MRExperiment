@@ -1,5 +1,5 @@
 # MRExperiment
-Project for the mental rotation test of Jost and Jansen (2019). Contains both code for conducting the experiment as well as code for reading and analyzing the data in R and the resulting dataset.
+Project for the mental rotation test of Jost and Jansen (2019). Contains both code for conducting the experiment as well as code for reading and analyzing the data in R and the resulting dataset. A linked OSF project is at https://osf.io/dr9mv/.
 
 ## Conducting the Experiment
 The experiment is programmed according to Jost and Jansen (2019). The runtime of the experiment is controlled by time instead of the number of stimuli, although an adaptation should be easily possible by adding break conditions. For all controlling software, stimuli and system parameters have to be set for usage.
@@ -59,9 +59,12 @@ The random order was changed such that all stimuli will be shown once (in random
 The same random stimulus order is used for all blocks (practice and main), such that the next block continues after the last stimulus of the previous block.
 
 ## R Code
-R code is in all other files. The testData folder contains some example data, so the code can be executed.
+The main R file is 'MRExperiment.R'. All used functions are included in the folder 'functions'. The testData folder contains some example data, so the code can be executed.
 
 R code will read data from files in the specified folder and do some calculations (average participant data, outlier detection for mental rotation data, plotting and averages for mental rotation data) and contains code for basic statistical analysis using linear mixed models (has to be adapted to individual case).
+
+### Analysis of improvements over time
+The subfolder 'functions/time as fixed effect' contains multiple analyses of the dataset to compare an analysis including time as a fixed effect to an analysis without time.
 
 ## Dataset
 The data collected and analyzed by Jost and Jansen (2019) is contained in the folder datasetJostJansen2019. The full data (in long format) is included as a table (dataset.csv) as well as tables and figures of mean data for all default parameters specified in R code.
