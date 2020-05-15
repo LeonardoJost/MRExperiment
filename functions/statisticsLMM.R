@@ -15,9 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-library(plyr)
 library(lme4)
 library(optimx)
+source("functions/helpers.R")
 
 
 #analysis of mental rotation

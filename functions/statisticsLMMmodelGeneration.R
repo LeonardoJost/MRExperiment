@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-library(plyr)
 library(lme4)
+library(optimx)
+source("functions/helpers.R")
 
 #analysis of mental rotation
 #prepare data
@@ -82,7 +83,7 @@ summary(rePCA(a1))
 ##remove nonsignificant fixed effects
 
 #stepwise remove nonsignificant fixed effect with lowest lrt
-
+plot(finalModelWithRS)
 #all values significant
 
 #visual inspection of normality

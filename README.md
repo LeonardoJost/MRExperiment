@@ -1,8 +1,8 @@
 # MRExperiment
-Project for the mental rotation test of Jost and Jansen (2019). Contains both code for conducting the experiment as well as code for reading and analyzing the data in R and the resulting dataset. A linked OSF project is at https://osf.io/dr9mv/.
+Project for the mental rotation test of Jost and Jansen (2020). Contains both code for conducting the experiment as well as code for reading and analyzing the data in R and the resulting dataset. A linked OSF project is at https://osf.io/dr9mv/.
 
 ## Conducting the Experiment
-The experiment is programmed according to Jost and Jansen (2019). The runtime of the experiment is controlled by time instead of the number of stimuli, although an adaptation should be easily possible by adding break conditions. For all controlling software, stimuli and system parameters have to be set for usage.
+The experiment is programmed according to Jost and Jansen (2020). The runtime of the experiment is controlled by time instead of the number of stimuli, although an adaptation should be easily possible by adding break conditions. For all controlling software, stimuli and system parameters have to be set for usage.
 
 Both programs contain both the experiment and a questionaire which is read from txt files. The questionaire can be omitted by using empty txt files. Questions are separated by line breaks. "--" serves as a placeholder for line breaks in the questions. "F1", "F2", and "FX" are placeholders for correct feedback, wrong feedback, and fixation symbol in the instructions.
 
@@ -67,9 +67,9 @@ R code will read data from files in the specified folder and do some calculation
 The subfolder 'functions/time as fixed effect' contains multiple analyses of the dataset to compare an analysis including time as a fixed effect to an analysis without time.
 
 ## Dataset
-The data collected and analyzed by Jost and Jansen (2019) is contained in the folder datasetJostJansen2019. The full data (in long format) is included as a table (dataset.csv) as well as tables and figures of mean data for all default parameters specified in R code.
+The data collected and analyzed by Jost and Jansen (2020) is contained in the folder datasetJostJansen2020. The full data (in long format) is included as a table (dataset.csv) as well as tables and figures of mean data for all default parameters specified in R code.
 
 ## Literature 
-Jost, L., & Jansen, P. (2019). A novel approach to analyzing mirrored stimuli in chronometric mental rotation and description of a flexible extended library of stimuli. Unpublished manuscript.
+Jost, L., & Jansen, P. (2020). A novel approach to analyzing all trials in chronometric mental rotation and description of a flexible extended library of stimuli. Spatial Cognition & Computation. DOI: 10.1080/13875868.2020.1754833
 
 Mathôt, S., Schreij, D., & Theeuwes, J. (2012). OpenSesame: An open-source, graphical experiment builder for the social sciences. Behavior Research Methods, 44(2), 314-324. doi:10.3758/s13428-011-0168-7
