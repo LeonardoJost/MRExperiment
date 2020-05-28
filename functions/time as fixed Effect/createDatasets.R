@@ -36,7 +36,7 @@ getReactionTimeDataset=function(myData){
 
 ### main script
 #load full dataset
-myData=read.csv(file="output\\dataset.csv",sep=";")
+myData=read.csv(file="datasetJostJansen2020\\tables\\dataset.csv",sep=";")
 #split block by time of 10 minutes
 myData$block=toChar(myData$block)
 myData$block=ifelse(myData$endTime>10*60*1000,ifelse(myData$endTime>20*60*1000,"main3","main2"),"main1")
@@ -138,3 +138,13 @@ datasetA5b=getReactionTimeDataset(myDataTestControl5)
 myDataTestControl5$cond=paste(myDataTestControl5$group,ifelse(myDataTestControl5$block=="main1","pretest","posttest"),sep="*")
 myDataTestControl5$condForLineTypes=myDataTestControl5$group
 generateTableAndGraphsForCondition(myDataTestControl5,"blockXgroup5b",FALSE,TRUE,"Group",TRUE)
+
+### random simulations
+#get control and treatment data from all participants
+myDataTest=myData13
+myDataTest$group="treatment"
+#rename main3 to main2 to compare with control
+myDataTest$block[which(myDataTest$block=="main3")]="main2"
+#control group with only block 1 and 2
+myDataControl=myData[which(myData$block!="main3"),]
+myDataControl$group="control"
