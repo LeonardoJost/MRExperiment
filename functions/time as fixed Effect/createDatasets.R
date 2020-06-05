@@ -17,7 +17,7 @@
 ### functions
 source("functions/helpers.R")
 source("functions/generateGraphsAndTables.R", encoding="utf-8")
-getReactionTimeDataset=function(myData){
+getReactionTimeDataset=function(myData, acc=FALSE){
   datasetForLMM=myData
   #scaling
   datasetForLMM$deg=datasetForLMM$deg/100
@@ -26,17 +26,21 @@ getReactionTimeDataset=function(myData){
   dataset.noOutlier=datasetForLMM[which(!datasetForLMM$outlier),]
   dataset.rt=dataset.noOutlier[which(dataset.noOutlier$typeOutlier=="hit"),]
   dataset.rt$deg=dataset.rt$deg-mean(dataset.rt$deg) #center degree
+  dataset.noOutlier$deg=dataset.noOutlier$deg-mean(dataset.noOutlier$deg) #center degree
   #normalizing time and centering degree are necessary to analyze main effects of partial interaction (block*group) when higher-
   #order interactions are present (deg*block*group+time*block*group). Main effects are calculated for value 0
   #0 of degree: average effect due to centering (this is "standard" main effect of removing higher order interaction)
   #0 of time: difference between blocks
-  return(dataset.rt)
+  if(acc)
+    return(dataset.noOutlier)
+  else
+    return(dataset.rt)
 }
 
 
 ### main script
 #load full dataset
-myData=read.csv(file="output\\dataset.csv",sep=";")
+myData=read.csv(file="datasetJostJansen2020\\tables\\dataset.csv",sep=";")
 #split block by time of 10 minutes
 myData$block=toChar(myData$block)
 myData$block=ifelse(myData$endTime>10*60*1000,ifelse(myData$endTime>20*60*1000,"main3","main2"),"main1")
@@ -46,6 +50,8 @@ myData$endTime=myData$endTime/60000
 ### analysis 1
 #all blocks
 datasetA1=getReactionTimeDataset(myData)
+#accuracy
+datasetA1a=getReactionTimeDataset(myData,TRUE)
 
 #generate some plots of the separation by blocks
 myData$cond=ifelse(myData$block=="main3","20-30min",ifelse(myData$block=="main2","10-20min","0-10min"))
