@@ -63,9 +63,6 @@ The main R file is 'MRExperiment.R'. All used functions are included in the fold
 
 R code will read data from files in the specified folder and do some calculations (average participant data, outlier detection for mental rotation data, plotting and averages for mental rotation data) and contains code for basic statistical analysis using linear mixed models (has to be adapted to individual case).
 
-### Analysis of improvements over time
-The subfolder 'functions/time as fixed effect' contains multiple analyses of the dataset to compare an analysis including time as a fixed effect to an analysis without time.
-
 ## Dataset
 The data collected and analyzed by Jost and Jansen (2020) is contained in the folder datasetJostJansen2020. The full data (in long format) is included as a table (dataset.csv) as well as tables and figures of mean data for all default parameters specified in R code.
 
