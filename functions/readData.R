@@ -19,24 +19,24 @@ source("functions/readDataPresentation.R", encoding="utf-8")
 source("functions/readDataOpenSesame.R", encoding="utf-8")
 source("functions/calculateData.R", encoding="utf-8")
 
-#get questionaireData
+#get questionnaireData
 #experimentalSoftware: which software was used to generate data? Presentation or OpenSesame
 #verbose: detail of output
 #folder: folder to search in for data
-getQuestionaireData=function(experimentalSoftware,verbose,folder){
+getQuestionnaireData=function(experimentalSoftware,verbose,folder){
   if (verbose>1) {
-    print("Reading questionaire data from files ...")
+    print("Reading questionnaire data from files ...")
   }
   if (experimentalSoftware=="OpenSesame") {
-    questionaireData=getOpenSesameQuestionaireData(verbose,folder, preText="", part="questionaire",ending="csv")
+    questionnaireData=getOpenSesameQuestionnaireData(verbose,folder, preText="", part="questionnaire",ending="csv")
   }
   if (experimentalSoftware=="Presentation") {
-    questionaireData=getPresentationQuestionaireData(verbose,folder)
+    questionnaireData=getPresentationQuestionnaireData(verbose,folder)
   }
   if (verbose>1) {
-    print(paste("Questionaire data from",nrow(questionaireData),"participants was read."))
+    print(paste("Questionnaire data from",nrow(questionnaireData),"participants was read."))
   }
-  return(questionaireData)
+  return(questionnaireData)
 }
 
 #get mental rotation data
@@ -60,23 +60,23 @@ getMRData=function(experimentalSoftware,verbose,folder,block="main"){
   return(MRData)
 }
 
-#modifies the questionairedata, calculates some additional information
+#modifies the questionnairedata, calculates some additional information
 #experimentalSoftware: which software was used to generate data? Presentation or OpenSesame
-#questionaireData: dataset
-modifyQuestionaireData=function(experimentalSoftware,questionaireData) {
+#questionnaireData: dataset
+modifyQuestionnaireData=function(experimentalSoftware,questionnaireData) {
   if (verbose>1) {
-    print("Doing calculations on questionaire data ...")
+    print("Doing calculations on questionnaire data ...")
   }
   if (experimentalSoftware=="OpenSesame") {
-    questionaireData=modifyOpenSesameQuestionaireData(questionaireData)
+    questionnaireData=modifyOpenSesameQuestionnaireData(questionnaireData)
   }
   if (experimentalSoftware=="Presentation") {
-    questionaireData=modifyPresentationQuestionaireData(questionaireData)
+    questionnaireData=modifyPresentationQuestionnaireData(questionnaireData)
   }
   if (verbose>1) {
-    print("Calculations on questionaire data finished.")
+    print("Calculations on questionnaire data finished.")
   }
-  return(questionaireData)
+  return(questionnaireData)
 }
 
 #modifies the mental rotation data, calculates some additional information

@@ -15,13 +15,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 source("functions/helpers.R")
-source("functions/readQuestionairePresentation.R", encoding="utf-8")
+source("functions/readQuestionnairePresentation.R", encoding="utf-8")
 
-#get all questionaire data from Presentation
-getPresentationQuestionaireData=function(verbose,folder) {
+#get all questionnaire data from Presentation
+getPresentationQuestionnaireData=function(verbose,folder) {
   #read data from files
-  questionaireData=getQuestionaireDataByDatePresentation(verbose, folder,"","q2")
-  return(questionaireData)
+  questionnaireData=getQuestionnaireDataByDatePresentation(verbose, folder,"","q2")
+  return(questionnaireData)
 }
 
 #get all MR data from Presentation
@@ -31,19 +31,19 @@ getPresentationMRData=function(verbose,folder,block="main") {
   return(MRData)
 }
 
-#modify questionaire Data from Presentation
-modifyPresentationQuestionaireData=function(questionaireData) {
+#modify questionnaire Data from Presentation
+modifyPresentationQuestionnaireData=function(questionnaireData) {
   #calculate handedness
-  questionaireData=getHandedness(verbose,questionaireData,11,10)
+  questionnaireData=getHandedness(verbose,questionnaireData,11,10)
   #set names
-  names(questionaireData)[1:10]=c("MRexperience","Age","Gender","Pill","Period","Sport","Endurance","Strength","Play","Music")
+  names(questionnaireData)[1:10]=c("MRexperience","Age","Gender","Pill","Period","Sport","Endurance","Strength","Play","Music")
   #transform values to numeric, remove white spaces, unify gender
-  questionaireData=cleanData(questionaireData,c("Gender"),c("Age","Period","Endurance","Strength","Play","Music"),c("MRexperience","Pill","Sport"))
+  questionnaireData=cleanData(questionnaireData,c("Gender"),c("Age","Period","Endurance","Strength","Play","Music"),c("MRexperience","Pill","Sport"))
   #unify some data
-  questionaireData$sportAkt=questionaireData[,"Endurance"]+questionaireData[,"Strength"]+questionaireData[,"Play"]
+  questionnaireData$sportAkt=questionnaireData[,"Endurance"]+questionnaireData[,"Strength"]+questionnaireData[,"Play"]
   #handedness to factor
-  questionaireData$handFactor=as.factor(questionaireData$hand)
-  return(questionaireData)
+  questionnaireData$handFactor=as.factor(questionnaireData$hand)
+  return(questionnaireData)
 }
 
 #modify MR data from Presentation
@@ -72,7 +72,7 @@ modifyPresentationMRData=function(verbose,MRData,outlierFactor) {
 
 #reads data from files
 #verbose: detail of output
-#folder: folder to search in for questionaire data
+#folder: folder to search in for questionnaire data
 #preText: Filter, only get files which start with preText
 #idLength: length of id, directly after preText
 getDataByIdPresentation=function(verbose, folder, preText, idLength) {
@@ -106,7 +106,7 @@ getDataByIdPresentation=function(verbose, folder, preText, idLength) {
 
 #reads data from files
 #verbose: detail of output
-#folder: folder to search in for questionaire data
+#folder: folder to search in for questionnaire data
 #preText: Filter, only get files which start with preText
 #part: Filter, only get part of data in block, that contains part in the name
 #items are sorted by date, id is order of dates

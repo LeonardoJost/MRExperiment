@@ -33,25 +33,25 @@ options(digits=6)
 folder="data\\MRlibrary\\"
 verbose=3 #detail of output
 experimentalSoftware="Presentation" #"OpenSesame" or "Presentation"
-questionaireOutFile="output\\questionaire" #.csv added at end, leave empty if no output desired
+questionnaireOutFile="output\\questionnaire" #.csv added at end, leave empty if no output desired
 handednessGraphFile="figs\\HandednessMW.png" #leave empty if no output desired
 outlierFactor=3 #factor of sd to define outliers in MR
 block="main"#name of intersting block of data
-questionaireDataCols=c("ID","Gender","MRexperience") #which questionaire columns shall be kept for statistical analysis
+questionnaireDataCols=c("ID","Gender","MRexperience") #which questionnaire columns shall be kept for statistical analysis
 
 ##read and write data
 #read data
-questionaireData=getQuestionaireData(experimentalSoftware,verbose,folder)
+questionnaireData=getQuestionnaireData(experimentalSoftware,verbose,folder)
 MRData=getMRData(experimentalSoftware,verbose,folder,block)
 #modify data #adapt to own data
-questionaireData=modifyQuestionaireData(experimentalSoftware,questionaireData)
+questionnaireData=modifyQuestionnaireData(experimentalSoftware,questionnaireData)
 MRData=modifyMRData(experimentalSoftware,verbose,MRData,outlierFactor)
-#calculate means from questionaire (and save to csv)
-calculateMeansQuestionaire(verbose,questionaireData,questionaireOutFile,handednessGraphFile)
-#remove not analyzed questionaire data to protect participant identity
-questionaireData=subset(questionaireData,select=questionaireDataCols)
+#calculate means from questionnaire (and save to csv)
+calculateMeansQuestionnaire(verbose,questionnaireData,questionnaireOutFile,handednessGraphFile)
+#remove not analyzed questionnaire data to protect participant identity
+questionnaireData=subset(questionnaireData,select=questionnaireDataCols)
 #unify data
-dataset=merge(MRData,questionaireData,by="ID")
+dataset=merge(MRData,questionnaireData,by="ID")
 #anonymise IDs to protect participant identity
 dataset$ID=as.factor(dataset$ID)
 levels(dataset$ID)=paste("id",sample.int(length(levels(dataset$ID))),sep="")

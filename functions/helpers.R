@@ -115,7 +115,7 @@ getHandedness=function(verbose,dat,startIndex, numberOfCriteria) {
   return(dat) 
 }
 
-#clean questionaire Data
+#clean questionnaire Data
 cleanData=function(dat,toFirstChars,toNums,cleanWhiteSpaces) {
   for(toFirstChar in toFirstChars)
   {

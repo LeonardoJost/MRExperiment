@@ -16,11 +16,11 @@
 
 source("functions/helpers.R")
 
-#get all questionaire data from OpenSesame
-getOpenSesameQuestionaireData=function(verbose,folder, preText="", part="questionaire",ending="csv") {
-  ##get questionaire data
-  questionaireData=getQuestionaireDataOpenSesame(verbose,folder, preText, part,ending)
-  return(questionaireData)
+#get all questionnaire data from OpenSesame
+getOpenSesamequestionnaireData=function(verbose,folder, preText="", part="questionnaire",ending="csv") {
+  ##get questionnaire data
+  questionnaireData=getquestionnaireDataOpenSesame(verbose,folder, preText, part,ending)
+  return(questionnaireData)
 }
 
 #get all MR data from OpenSesame
@@ -30,19 +30,19 @@ getOpenSesameMRData=function(verbose,folder, preText="", part="main",ending="csv
   return(MRData)
 }
 
-#modify questionaire Data from OpenSesame
-modifyOpenSesameQuestionaireData=function(questionaireData) {
+#modify questionnaire Data from OpenSesame
+modifyOpenSesameQuestionnaireData=function(questionnaireData) {
   #handedness data
-  questionaireData=getHandedness(verbose,questionaireData,which(names(questionaireData) %in% 'Hand')[1],length(which(names(questionaireData) %in% 'Hand')))
+  questionnaireData=getHandedness(verbose,questionnaireData,which(names(questionnaireData) %in% 'Hand')[1],length(which(names(questionnaireData) %in% 'Hand')))
   #transform values to numeric, remove white spaces, unify gender
-  questionaireData=cleanData(questionaireData,c("Gender"),c("Age","Period","Endurance","Strength","Play","Music"),c())
+  questionnaireData=cleanData(questionnaireData,c("Gender"),c("Age","Period","Endurance","Strength","Play","Music"),c())
   #unify some data
-  questionaireData$sportAkt=questionaireData[,"Endurance"]+questionaireData[,"Strength"]+questionaireData[,"Play"]
+  questionnaireData$sportAkt=questionnaireData[,"Endurance"]+questionnaireData[,"Strength"]+questionnaireData[,"Play"]
   #handedness to factor
-  questionaireData$handFactor=as.factor(questionaireData$hand)
+  questionnaireData$handFactor=as.factor(questionnaireData$hand)
   #rename columns to different names
-  colnames(questionaireData) = make.unique(names(questionaireData))
-  return(questionaireData)
+  colnames(questionnaireData) = make.unique(names(questionnaireData))
+  return(questionnaireData)
 }
 
 #modify MR Data from OpenSesame
@@ -115,7 +115,7 @@ getDataOpenSesame=function(verbose, folder, preText="", part="main",ending="csv"
 #preText: Filter, only get files which start with preText
 #part: Filter, only get part of data in block, that contains part in the name
 #ending: filetype of files
-getQuestionaireDataOpenSesame=function(verbose, folder, preText="", part="questionaire",ending="csv") {
+getquestionnaireDataOpenSesame=function(verbose, folder, preText="", part="questionnaire",ending="csv") {
   #get files in folger (Reaction Time Data)
   fileNames=getFileNames(folder,preText,ending)
   if (verbose>2) {

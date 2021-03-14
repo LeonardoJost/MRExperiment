@@ -1,4 +1,4 @@
-### Read questionaire data from Presentation logfiles
+### Read questionnaire data from Presentation logfiles
 #     Copyright (C) 2019  Leonardo Jost
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -17,12 +17,12 @@
 source("functions/helpers.R")
 
 #verbose: detail of output
-#folder: folder to search in for questionaire data
+#folder: folder to search in for questionnaire data
 #preText: Filter, only get files which start with preText
 #firstQuestion: label of first question
 #idLength: length of id, directly after preText
-getQuestionaireDataByIDPresentation=function(verbose, folder, preText,firstQuestion, idLength) {
-  #get files in folder (Questionaire Data)
+getQuestionnaireDataByIDPresentation=function(verbose, folder, preText,firstQuestion, idLength) {
+  #get files in folder (Questionnaire Data)
   fileNames=getFileNames(folder,paste(preText,".*Question.*",sep=""),"txt")
   if (verbose>2) {print(fileNames)}
   #get number of questions from first file
@@ -52,13 +52,13 @@ getQuestionaireDataByIDPresentation=function(verbose, folder, preText,firstQuest
 }
 
 #verbose: detail of output
-#folder: folder to search in for questionaire data
+#folder: folder to search in for questionnaire data
 #preText: Filter, only get files which start with preText
 #firstQuestion: label of first question
 #items are sorted by date, id is order of dates
 #fileNames are sorted alphabetically if no id is given -> date is alphabetical
-getQuestionaireDataByDatePresentation=function(verbose, folder, preText,firstQuestion) {
-  #get files in folder (Questionaire Data)
+getQuestionnaireDataByDatePresentation=function(verbose, folder, preText,firstQuestion) {
+  #get files in folder (Questionnaire Data)
   fileNames=getFileNames(folder,paste(preText,".*Question.*",sep=""),"txt")
   if (verbose>2) {print(fileNames)}
   #get number of questions from first file

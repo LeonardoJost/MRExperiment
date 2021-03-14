@@ -1,6 +1,6 @@
 ---
 API: 2.1
-OpenSesame: 3.2.8
+OpenSesame: 3.3.6
 Platform: nt
 ---
 set width 1680
@@ -57,12 +57,12 @@ define loop Blocks
 	set break_if never
 	setcycle 0 aaBlock practice
 	setcycle 0 instructions "InstructionsPractice.txt"
-	setcycle 0 maxDurationMins 1
+	setcycle 0 maxDurationMins 0
 	setcycle 0 feedbackDuration 1000
 	setcycle 0 feedback 1
 	setcycle 1 aaBlock main
 	setcycle 1 instructions "Instructions.txt"
-	setcycle 1 maxDurationMins 1
+	setcycle 1 maxDurationMins 0
 	setcycle 1 feedbackDuration 500
 	setcycle 1 feedback 0
 	run BlockSequence
@@ -129,9 +129,9 @@ define sequence QuestionSequence
 	set description "Runs a number of items in sequence"
 	run prepareQuestion always
 	run ShowForm always
-	run questionaireLogger always
+	run questionnaireLogger always
 
-define sequence Questionaire
+define sequence Questionnaire
 	set flush_keyboard yes
 	set description "Runs a number of items in sequence"
 	run ReadQuestions always
@@ -154,17 +154,16 @@ define inline_script ReadInstructions
 	set description "Executes Python code"
 	set _run ""
 	___prepare__
-	import string
-	with open(pool[var.instructions]) as file:
+	with open(pool[var.instructions],encoding="utf-8-sig") as file:
 		instructionsText = file.read()
-	var.instructionsText=instructionsText.decode(u'UTF-8-sig').replace(u'F1',var.feedbackCorrect).replace(u'F2',var.feedbackWrong).replace(u'FX',var.fixation)
+	var.instructionsText=instructionsText.replace(u'F1',var.feedbackCorrect).replace(u'F2',var.feedbackWrong).replace(u'FX',var.fixation)
 	var.instructionsText1=var.instructionsText.split(u'(Continue)')[0]
 	#replace part after (Continue) by empty lines to keep spacing/positioning
-	#empty lines are trimmed rigorously (even non-breaking spaces) so dots are displyed
+	#empty lines are trimmed rigorously (even non-breaking spaces) so dots are displayed
 	#pixelwise positioning of text is another option but difficult as converting fontsize to px is not uniform
 	if len(var.instructionsText.split(u'(Continue)'))>1:
-		continueLines=var.instructionsText.split(u'(Continue)')[1].count(u'\n')+1
-		var.instructionsText1+=u'.\n'*continueLines
+		continueLines=var.instructionsText.split(u'(Continue)')[1].count(u'\n')
+		var.instructionsText1+=u'<span style="color:rgba(0,0,0,.01)">.</span>\n'*continueLines
 	#remove (Continue)
 	var.instructionsText=var.instructionsText.replace(u'(Continue)',u'')
 	__end__
@@ -172,12 +171,11 @@ define inline_script ReadInstructions
 define inline_script ReadQuestions
 	set description "Executes Python code"
 	___run__
-	import string
-	with open(pool[var.questionaireFile]) as file:
+	with open(pool[var.questionnaireFile], encoding="utf-8-sig") as file:
 		var.questionsText = file.readlines()
 	var.numberOfQuestions=len(var.questionsText)
 	var.questionNumber=0
-	var.aaBlock=u'questionaire'
+	var.aaBlock=u'questionnaire'
 	var.answerList=list()
 	var.showQuestion=1  #true is converted to yes, use 0/1 instead
 	var.form_response=u''
@@ -368,7 +366,7 @@ define sequence experiment
 	run StimulusRandomization always
 	run CreateID always
 	run Blocks always
-	run Questionaire always
+	run Questionnaire always
 
 define mouse_response mouseResponse
 	set timeout infinite
@@ -399,11 +397,11 @@ define inline_script parameters
 	#minimum duration of instructions in ms
 	var.instructionDuration=1000
 	var.instructionFontSize=18
-	##questionaire: 
+	##questionnaire: 
 	#option to avoid question
 	var.avoidQuestion=u'keine Angabe'
 	#file containing questions
-	var.questionaireFile=u'Fragebogen.txt'
+	var.questionnaireFile=u'Fragebogen.txt'
 	#added message if no answer is given
 	var.noAnswerError=u'\n\nBitte geben Sie eine Antwort ein'
 	#stimulus generation
@@ -430,7 +428,7 @@ define inline_script prepareQuestion
 	set _run ""
 	___prepare__
 	#get this question
-	thisQuestionFull=var.questionsText[var.questionNumber].decode(u'UTF-8-sig')
+	thisQuestionFull=var.questionsText[var.questionNumber]
 	var.questionNumber=var.questionNumber+1
 	#prepare
 	var.showQuestion=1
@@ -495,7 +493,7 @@ define inline_script prepareQuestion
 	var.thisQuestion=thisQuestionRest.replace(u'--',u'\n')
 	__end__
 
-define logger questionaireLogger
+define logger questionnaireLogger
 	set description "Logs experimental data"
 	set auto_log no
 	log aaBlock
